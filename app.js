@@ -1,5 +1,6 @@
 /* ============================================
-   DAR AL ABAYA — Main Application JS
+   ROYAL ABAYA — Main Application JS
+   (Firebase Realtime Database)
    ============================================ */
 
 (function () {
@@ -11,12 +12,11 @@
     TOTAL_FRAMES: 120,
     FRAME_RATE: 24,
     CURRENCY: '₹',
-    STORAGE_KEY: 'abayas_products',
-    CART_KEY: 'abayas_cart',
   };
 
   // --- STATE ---
-  let cart = JSON.parse(sessionStorage.getItem(CONFIG.CART_KEY) || '[]');
+  let products = [];
+  let cart = JSON.parse(sessionStorage.getItem('abayas_cart') || '[]');
   let currentModalProduct = null;
   let selectedSize = null;
 
@@ -65,15 +65,12 @@
     const displayWidth = heroLeft.offsetWidth;
     const displayHeight = heroLeft.offsetHeight;
 
-    // Set the canvas internal resolution to match device pixels
     canvas.width = displayWidth * dpr;
     canvas.height = displayHeight * dpr;
 
-    // Scale CSS size to display size
     canvas.style.width = displayWidth + 'px';
     canvas.style.height = displayHeight + 'px';
 
-    // Scale the drawing context so draw commands use CSS pixel coordinates
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     drawFrame(currentFrame);
@@ -83,11 +80,9 @@
     if (!frames[index] || !frames[index].complete) return;
     const img = frames[index];
 
-    // Use CSS display dimensions (not the internal canvas resolution)
     const displayWidth = parseFloat(canvas.style.width) || canvas.width;
     const displayHeight = parseFloat(canvas.style.height) || canvas.height;
 
-    // Cover the display area
     const canvasRatio = displayWidth / displayHeight;
     const imgRatio = img.width / img.height;
 
@@ -128,16 +123,19 @@
   }
 
   // ============================================
-  // PRODUCTS
+  // PRODUCTS — Firebase Realtime Listener
   // ============================================
 
-  function getProducts() {
-    return JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
+  function listenToProducts() {
+    productsRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      products = data ? Object.values(data) : [];
+      renderProducts();
+    });
   }
 
   function renderProducts() {
     const grid = document.getElementById('productsGrid');
-    const products = getProducts();
 
     if (products.length === 0) {
       grid.innerHTML = `
@@ -174,7 +172,6 @@
   // ============================================
 
   function openModal(productId) {
-    const products = getProducts();
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
@@ -189,7 +186,6 @@
     document.getElementById('modalProductId').textContent = 'Product ID: ' + product.id;
     document.getElementById('modalDescription').textContent = product.description || 'A beautifully crafted abaya designed for elegance and comfort.';
 
-    // Sizes
     const sizesContainer = document.getElementById('modalSizes');
     const sizes = product.sizes || ['S', 'M', 'L', 'XL'];
     sizesContainer.innerHTML = sizes.map(s =>
@@ -217,13 +213,11 @@
   // ============================================
 
   function addToCart(productId) {
-    const products = getProducts();
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
     const existingIndex = cart.findIndex(c => c.id === productId);
     if (existingIndex >= 0) {
-      // Remove if already in cart (toggle)
       cart.splice(existingIndex, 1);
     } else {
       cart.push({
@@ -251,7 +245,7 @@
   }
 
   function saveCart() {
-    sessionStorage.setItem(CONFIG.CART_KEY, JSON.stringify(cart));
+    sessionStorage.setItem('abayas_cart', JSON.stringify(cart));
   }
 
   function updateCartBadge() {
@@ -322,8 +316,7 @@
       message += `${i + 1}. *${item.name}*\n`;
       message += `   Product ID: ${item.id}\n`;
       message += `   Size: ${item.size}\n`;
-      message += `   Price: ${CONFIG.CURRENCY}${Number(item.price).toLocaleString('en-IN')}\n`;
-      message += `   Image: ${window.location.origin}/${item.image}\n\n`;
+      message += `   Price: ${CONFIG.CURRENCY}${Number(item.price).toLocaleString('en-IN')}\n\n`;
     });
 
     const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
@@ -343,8 +336,7 @@
     message += `*${p.name}*\n`;
     message += `Product ID: ${p.id}\n`;
     message += `Price: ${CONFIG.CURRENCY}${Number(p.price).toLocaleString('en-IN')}\n`;
-    message += `Size: ${selectedSize || 'Not selected'}\n`;
-    message += `Image: ${window.location.origin}/${p.image}\n\n`;
+    message += `Size: ${selectedSize || 'Not selected'}\n\n`;
     message += `Please share more details. Thank you! 🤍`;
 
     const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -369,20 +361,17 @@
   // ============================================
 
   function initNavbar() {
-    let lastScroll = 0;
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
       navbar.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // Mobile menu
     const toggle = document.getElementById('menuToggle');
     const links = document.getElementById('navLinks');
     toggle.addEventListener('click', () => {
       links.classList.toggle('open');
     });
 
-    // Close mobile menu on link click
     links.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', () => links.classList.remove('open'));
     });
@@ -411,12 +400,10 @@
   // ============================================
 
   function initEvents() {
-    // Cart
     document.getElementById('cartToggle').addEventListener('click', () => toggleCart(true));
     document.getElementById('cartClose').addEventListener('click', () => toggleCart(false));
     document.getElementById('cartBackdrop').addEventListener('click', () => toggleCart(false));
 
-    // Modal
     document.getElementById('modalClose').addEventListener('click', closeModal);
     document.getElementById('productModal').addEventListener('click', (e) => {
       if (e.target === document.getElementById('productModal')) closeModal();
@@ -429,18 +416,9 @@
     });
     document.getElementById('modalWhatsApp').addEventListener('click', whatsappSingleProduct);
 
-    // WhatsApp checkout
     document.getElementById('whatsappCheckout').addEventListener('click', whatsappCheckout);
 
-    // Resize canvas
     window.addEventListener('resize', resizeCanvas);
-
-    // Listen for product updates from admin
-    window.addEventListener('storage', (e) => {
-      if (e.key === CONFIG.STORAGE_KEY) {
-        renderProducts();
-      }
-    });
   }
 
   // ============================================
@@ -462,8 +440,8 @@
     drawFrame(0);
     startAnimation();
 
-    // Render products
-    renderProducts();
+    // Listen for products from Firebase (real-time)
+    listenToProducts();
     updateCartBadge();
 
     // Scroll reveal
