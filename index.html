@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Royal Abaya — Luxury Muslim abayas and modest fashion. Grace in every drape.">
+  <title>Royal Abaya — Grace in Every Drape</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+</head>
+
+<body>
+
+  <!-- PRELOADER -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-brand">ROYAL ABAYA</div>
+    <div class="preloader-bar">
+      <div class="preloader-progress" id="preloaderProgress"></div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="navbar-brand">
+        <span class="brand-icon">R</span>
+        <span class="brand-name">ROYAL ABAYA</span>
+      </a>
+
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="#collections">Collections</a></li>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li>
+          <button class="cart-btn" id="cartToggle" aria-label="Open cart">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
+            Cart
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </li>
+      </ul>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION — Split Layout -->
+  <section class="hero" id="hero">
+    <!-- Left: Model Animation -->
+    <div class="hero-left">
+      <div class="hero-canvas-wrapper">
+        <canvas id="heroCanvas"></canvas>
+      </div>
+    </div>
+    <!-- Right: Text Content with elegant background -->
+    <div class="hero-right">
+      <div class="hero-right-bg"></div>
+      <div class="hero-content">
+        <span class="hero-badge">✦ New Collection 2026</span>
+        <h1 class="hero-title">Grace in<br>Every <em>Drape</em></h1>
+        <p class="hero-description">Discover our exquisite collection of handcrafted abayas, where timeless heritage
+          meets contemporary sophistication.</p>
+        <div class="hero-actions">
+          <a href="#collections" class="btn btn-primary">Explore Collection</a>
+          <a href="#about" class="btn btn-outline">Our Heritage</a>
+        </div>
+      </div>
+      <div class="hero-scroll">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span>Premium Fabrics</span>
+      <span>Handcrafted Details</span>
+      <span>Royal Heritage</span>
+      <span>Modest Elegance</span>
+      <span>Free Consultation</span>
+      <span>Worldwide Shipping</span>
+      <span>Premium Fabrics</span>
+      <span>Handcrafted Details</span>
+      <span>Royal Heritage</span>
+      <span>Modest Elegance</span>
+      <span>Free Consultation</span>
+      <span>Worldwide Shipping</span>
+    </div>
+  </div>
+
+  <!-- COLLECTIONS -->
+  <section class="section collections" id="collections">
+    <div class="container">
+      <div class="collections-header reveal">
+        <span class="section-label">Our Collection</span>
+        <h2 class="section-title">Curated for Royalty</h2>
+        <p class="section-subtitle">Each abaya is a masterpiece of craftsmanship, designed to embody grace, modesty, and
+          timeless elegance.</p>
+      </div>
+      <div class="products-grid" id="productsGrid">
+        <!-- Products rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-content reveal">
+          <span class="section-label">Our Heritage</span>
+          <h2 class="section-title">Crafting Elegance Since Generations</h2>
+          <p class="about-text">
+            At Royal Abaya, we believe that modest fashion is an art form. Every stitch tells a story of heritage, every
+            fabric chosen with the discerning eye of a connoisseur.
+          </p>
+          <p class="about-text">
+            Our master artisans blend centuries-old techniques with contemporary design sensibilities, creating pieces
+            that honor tradition while embracing the modern woman's desire for sophistication and comfort.
+          </p>
+          <ul class="about-features">
+            <li>Premium hand-selected fabrics from the finest mills</li>
+            <li>Intricate hand-embroidered detailing</li>
+            <li>Each piece individually inspected for perfection</li>
+            <li>Personalized sizing and consultation available</li>
+          </ul>
+        </div>
+        <div class="about-image reveal">
+          <img src="images/ezgif-frame-040.jpg" alt="Abaya craftsmanship detail">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE BANNER -->
+  <section class="experience-banner" id="experience">
+    <div class="container reveal">
+      <span class="section-label">The Experience</span>
+      <h2 class="section-title">Where Royalty Meets Modesty</h2>
+      <p class="section-subtitle">Join thousands of discerning women who have chosen Royal Abaya for their most
+        cherished moments.</p>
+      <a href="https://wa.me/+91XXXXXXXXXX?text=Hello%2C%20I%20would%20like%20to%20know%20more%20about%20your%20collection."
+        class="btn btn-whatsapp" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+          <path
+            d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.584-1.186A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.153 0-4.19-.577-5.94-1.588l-.42-.249-3.084.798.832-3.012-.276-.436A9.954 9.954 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z" />
+        </svg>
+        Chat With Us
+      </a>
+      <div class="experience-stats">
+        <div class="stat">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Exclusive Designs</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">10K+</span>
+          <span class="stat-label">Happy Customers</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">15+</span>
+          <span class="stat-label">Years of Craft</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="brand-name">ROYAL ABAYA</span>
+          <p class="footer-description">Luxury modest fashion crafted with love, heritage, and an unwavering commitment
+            to elegance.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#collections">Collections</a></li>
+            <li><a href="#about">Our Story</a></li>
+            <li><a href="#experience">Experience</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Customer Care</h4>
+          <ul>
+            <li><a href="https://wa.me/+91XXXXXXXXXX" target="_blank">WhatsApp Support</a></li>
+            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">Shipping Info</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Follow Us</h4>
+          <ul>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Pinterest</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copyright">&copy; 2026 Royal Abaya. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram">✦</a>
+          <a href="#" aria-label="Facebook">✦</a>
+          <a href="#" aria-label="Pinterest">✦</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal" id="modalContent">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-image">
+        <img id="modalImage" src="" alt="">
+      </div>
+      <div class="modal-body">
+        <span class="modal-category" id="modalCategory"></span>
+        <h2 class="modal-name" id="modalName"></h2>
+        <p class="modal-price" id="modalPrice"></p>
+        <p class="modal-product-id" id="modalProductId"></p>
+        <p class="modal-description" id="modalDescription"></p>
+        <div class="size-selector">
+          <label>Select Size</label>
+          <div class="size-options" id="modalSizes"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="modalAddCart">Add to Cart</button>
+          <button class="btn btn-whatsapp" id="modalWhatsApp">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+              <path
+                d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.584-1.186A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" />
+            </svg>
+            Ask on WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div class="cart-drawer-backdrop" id="cartBackdrop"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h3>Your Selection</h3>
+      <button class="cart-drawer-close" id="cartClose">&times;</button>
+    </div>
+    <div class="cart-drawer-items" id="cartItems">
+      <!-- Cart items rendered by JS -->
+    </div>
+    <div class="cart-drawer-footer" id="cartFooter">
+      <div class="cart-total">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-price" id="cartTotal">₹0</span>
+      </div>
+      <button class="btn btn-whatsapp whatsapp-checkout" id="whatsappCheckout">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+          <path
+            d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.584-1.186A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" />
+        </svg>
+        Order on WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✦</span>
+    <span class="toast-text" id="toastText">Added to cart</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

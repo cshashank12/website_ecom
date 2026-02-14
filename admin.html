@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin — Royal Abaya</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-input: #1C1C1C;
+            --accent-gold: #C9A96E;
+            --accent-gold-light: #E0C98D;
+            --accent-gold-dark: #A88B4A;
+            --accent-gold-glow: rgba(201, 169, 110, 0.15);
+            --text-primary: #F5F0E8;
+            --text-secondary: #A89F91;
+            --text-muted: #6B6560;
+            --text-dark: #0A0A0A;
+            --border-subtle: rgba(201, 169, 110, 0.12);
+            --border-accent: rgba(201, 169, 110, 0.3);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --transition-fast: 0.2s ease;
+            --transition-base: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Auth Gate */
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .auth-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .auth-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: 320px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            text-align: center;
+            letter-spacing: 4px;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .auth-input.error {
+            border-color: var(--danger);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gold);
+            color: var(--text-dark);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .auth-btn:hover {
+            background: var(--accent-gold-light);
+        }
+
+        /* Layout */
+        .admin-wrapper {
+            display: none;
+        }
+
+        .admin-wrapper.visible {
+            display: block;
+        }
+
+        .admin-header {
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .admin-header-brand {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        .admin-header-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: var(--accent-gold-glow);
+            color: var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-accent);
+        }
+
+        .back-link {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--accent-gold);
+        }
+
+        .admin-body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        /* Cards */
+        .admin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .admin-card-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .admin-card-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-select option {
+            background: var(--bg-card);
+        }
+
+        /* Image upload */
+        .image-upload {
+            border: 2px dashed var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-upload:hover {
+            border-color: var(--accent-gold);
+            background: var(--accent-gold-glow);
+        }
+
+        .image-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image-upload-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            opacity: 0.3;
+        }
+
+        .image-upload-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 240px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            margin: 12px auto 0;
+            display: none;
+        }
+
+        .image-preview.visible {
+            display: block;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-gold {
+            background: var(--accent-gold);
+            color: var(--text-dark);
+        }
+
+        .btn-gold:hover {
+            background: var(--accent-gold-light);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-accent);
+            color: var(--text-primary);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(201, 169, 110, 0.08);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .btn-small {
+            padding: 6px 14px;
+            font-size: 0.68rem;
+        }
+
+        /* Product Table */
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table th {
+            text-align: left;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .products-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: middle;
+        }
+
+        .products-table tr:hover td {
+            background: rgba(201, 169, 110, 0.03);
+        }
+
+        .product-thumb {
+            width: 56px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+        }
+
+        .product-table-name {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .product-table-id {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .product-table-price {
+            color: var(--accent-gold);
+            font-weight: 500;
+        }
+
+        .product-table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 20px 28px;
+            flex: 1;
+        }
+
+        .stat-card-value {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            font-weight: 500;
+        }
+
+        .stat-card-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Notification */
+        .admin-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 5000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-base);
+        }
+
+        .admin-toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .admin-toast.success {
+            border-color: rgba(39, 174, 96, 0.3);
+        }
+
+        .admin-toast.error {
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+
+            .admin-body {
+                padding: 24px 16px;
+            }
+
+            .products-table {
+                font-size: 0.82rem;
+            }
+
+            .admin-header {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH GATE -->
+    <div class="auth-gate" id="authGate">
+        <div class="auth-brand">ROYAL ABAYA</div>
+        <div class="auth-subtitle">Admin Portal</div>
+        <div class="auth-form">
+            <input type="password" class="auth-input" id="authPassword" placeholder="Enter Password" autocomplete="off">
+            <button class="auth-btn" id="authSubmit">Authenticate</button>
+        </div>
+    </div>
+
+    <!-- ADMIN WRAPPER -->
+    <div class="admin-wrapper" id="adminWrapper">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="admin-header-left">
+                <span class="admin-header-brand">ROYAL ABAYA</span>
+                <span class="admin-header-badge">Admin</span>
+            </div>
+            <a href="index.html" class="back-link">← View Store</a>
+        </header>
+
+        <div class="admin-body">
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-card-value" id="statCount">0</div>
+                    <div class="stat-card-label">Total Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value" id="statCategories">0</div>
+                    <div class="stat-card-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value" id="statAvgPrice">₹0</div>
+                    <div class="stat-card-label">Avg. Price</div>
+                </div>
+            </div>
+
+            <!-- Add Product Form -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title" id="formTitle">Add New Product</h2>
+                    <button class="btn btn-ghost btn-small" id="loadSamplesBtn">Load Sample Data</button>
+                </div>
+
+                <form id="productForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Product Name *</label>
+                            <input type="text" class="form-input" id="prodName" placeholder="e.g. Royal Sapphire Abaya"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price (₹) *</label>
+                            <input type="number" class="form-input" id="prodPrice" placeholder="e.g. 4500" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="prodCategory">
+                                <option value="Classic">Classic</option>
+                                <option value="Embroidered">Embroidered</option>
+                                <option value="Premium">Premium</option>
+                                <option value="Bridal">Bridal</option>
+                                <option value="Casual">Casual</option>
+                                <option value="Party Wear">Party Wear</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sizes (comma-separated)</label>
+                            <input type="text" class="form-input" id="prodSizes" placeholder="S, M, L, XL"
+                                value="S, M, L, XL">
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" id="prodDescription"
+                                placeholder="Describe the abaya's fabric, design, and craftsmanship..."></textarea>
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Product Image *</label>
+                            <div class="image-upload" id="imageUpload">
+                                <input type="file" accept="image/*" id="prodImage">
+                                <div class="image-upload-icon">📷</div>
+                                <div class="image-upload-text">Click or drag to upload product image</div>
+                                <img class="image-preview" id="imagePreview" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="editId">
+                    <div class="btn-row">
+                        <button type="submit" class="btn btn-gold" id="submitBtn">Add Product</button>
+                        <button type="button" class="btn btn-ghost" id="cancelEdit" style="display:none">Cancel
+                            Edit</button>
+                        <button type="button" class="btn btn-danger" id="clearAllBtn">Clear All Products</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Products Table -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">Product Inventory</h2>
+                    <span class="admin-card-count" id="tableCount">0 products</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Sizes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsBody">
+                            <tr>
+                                <td colspan="6" class="table-empty">No products added yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="admin-toast" id="adminToast">
+        <span id="adminToastText">Saved</span>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
