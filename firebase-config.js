@@ -5,7 +5,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyD_b5PGrwDSjW3zzHQeWaMFkfbbUQZF5Sw",
     authDomain: "royala-ab698.firebaseapp.com",
-    databaseURL: "https://royala-ab698-default-rtdb.firebaseio.com",
+    databaseURL: "https://royala-ab698-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "royala-ab698",
     storageBucket: "royala-ab698.firebasestorage.app",
     messagingSenderId: "768967129798",
