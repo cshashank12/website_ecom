@@ -19,25 +19,60 @@
 
     function initAuth() {
         const gate = document.getElementById('authGate');
-        const input = document.getElementById('authPassword');
-        const btn = document.getElementById('authSubmit');
+        const form = document.getElementById('authForm');
+        const emailInput = document.getElementById('authEmail');
+        const passInput = document.getElementById('authPassword');
+        const errorMsg = document.getElementById('authError');
+        const logoutBtn = document.getElementById('logoutBtn');
 
-        function attempt() {
-            if (input.value === ADMIN_PASSWORD) {
+        // Auth State Listener
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in.
                 gate.classList.add('hidden');
                 document.getElementById('adminWrapper').classList.add('visible');
                 listenToProducts();
             } else {
-                input.classList.add('error');
-                setTimeout(() => input.classList.remove('error'), 500);
-                input.value = '';
+                // No user is signed in.
+                gate.classList.remove('hidden');
+                document.getElementById('adminWrapper').classList.remove('visible');
             }
-        }
-
-        btn.addEventListener('click', attempt);
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') attempt();
         });
+
+        // Login Handler
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passInput.value;
+
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in via listener
+                    console.log('Logged in:', userCredential.user.email);
+                    form.reset();
+                })
+                .catch((error) => {
+                    console.error('Login error:', error);
+                    errorMsg.textContent = error.message;
+                    errorMsg.style.display = 'block';
+                    passInput.classList.add('error');
+                    setTimeout(() => passInput.classList.remove('error'), 500);
+                });
+        });
+
+        // Logout Handler
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                firebase.auth().signOut().then(() => {
+                    console.log('Signed out');
+                }).catch((error) => {
+                    console.error('Sign out error', error);
+                });
+            });
+        }
     }
 
     // ============================================

@@ -558,10 +558,14 @@
     <div class="auth-gate" id="authGate">
         <div class="auth-brand">ROYAL ABAYA</div>
         <div class="auth-subtitle">Admin Portal</div>
-        <div class="auth-form">
-            <input type="password" class="auth-input" id="authPassword" placeholder="Enter Password" autocomplete="off">
-            <button class="auth-btn" id="authSubmit">Authenticate</button>
-        </div>
+        <form class="auth-form" id="authForm">
+            <input type="email" class="auth-input" id="authEmail" placeholder="Admin Email" autocomplete="email"
+                required>
+            <input type="password" class="auth-input" id="authPassword" placeholder="Password"
+                autocomplete="current-password" required>
+            <button type="submit" class="auth-btn" id="authSubmit">Login</button>
+            <div id="authError" style="color: var(--danger); font-size: 0.8rem; margin-top: 8px; display: none;"></div>
+        </form>
     </div>
 
     <!-- ADMIN WRAPPER -->
@@ -572,7 +576,10 @@
                 <span class="admin-header-brand">ROYAL ABAYA</span>
                 <span class="admin-header-badge">Admin</span>
             </div>
-            <a href="index.html" class="back-link">← View Store</a>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <button id="logoutBtn" class="btn btn-ghost btn-small">Logout</button>
+                <a href="index.html" class="back-link">← View Store</a>
+            </div>
         </header>
 
         <div class="admin-body">
@@ -687,6 +694,7 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
 
