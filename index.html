@@ -13,6 +13,19 @@
 
 <body>
 
+  <!-- SCROLL PROGRESS BAR -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- PARALLAX GOLD ORNAMENTS -->
+  <div class="parallax-ornaments" id="parallaxOrnaments">
+    <span class="parallax-ornament">✦</span>
+    <span class="parallax-ornament">❖</span>
+    <span class="parallax-ornament">✦</span>
+    <span class="parallax-ornament">✧</span>
+    <span class="parallax-ornament">✦</span>
+    <span class="parallax-ornament">❖</span>
+  </div>
+
   <!-- PRELOADER -->
   <div class="preloader" id="preloader">
     <div class="preloader-brand">ROYAL ABAYA</div>
@@ -64,13 +77,13 @@
     <div class="hero-right">
       <div class="hero-right-bg"></div>
       <div class="hero-content">
-        <span class="hero-badge">✦ New Collection 2026</span>
+        <span class="hero-badge">✦ Designed & Built in Dubai</span>
         <h1 class="hero-title">Grace in<br>Every <em>Drape</em></h1>
-        <p class="hero-description">Discover our exquisite collection of handcrafted abayas, where timeless heritage
-          meets contemporary sophistication.</p>
+        <p class="hero-description">Dubai-designed abayas crafted with the finest fabrics, now available for the modern
+          Indian woman — royal elegance at honest prices.</p>
         <div class="hero-actions">
           <a href="#collections" class="btn btn-primary">Explore Collection</a>
-          <a href="#about" class="btn btn-outline">Our Heritage</a>
+          <a href="#about" class="btn btn-outline">Our Story</a>
         </div>
       </div>
       <div class="hero-scroll">
@@ -83,18 +96,18 @@
   <!-- MARQUEE -->
   <div class="marquee-section">
     <div class="marquee-track">
+      <span>Designed in Dubai</span>
       <span>Premium Fabrics</span>
       <span>Handcrafted Details</span>
-      <span>Royal Heritage</span>
       <span>Modest Elegance</span>
       <span>Free Consultation</span>
-      <span>Worldwide Shipping</span>
+      <span>Pan India Delivery</span>
+      <span>Designed in Dubai</span>
       <span>Premium Fabrics</span>
       <span>Handcrafted Details</span>
-      <span>Royal Heritage</span>
       <span>Modest Elegance</span>
       <span>Free Consultation</span>
-      <span>Worldwide Shipping</span>
+      <span>Pan India Delivery</span>
     </div>
   </div>
 
@@ -106,9 +119,62 @@
         <h2 class="section-title">Curated for Royalty</h2>
         <p class="section-subtitle">Each abaya is a masterpiece of craftsmanship, designed to embody grace, modesty, and
           timeless elegance.</p>
+        <span class="product-count" id="productCount"></span>
       </div>
-      <div class="products-grid" id="productsGrid">
+      <div class="products-grid" id="productsGrid" data-limit="9">
         <!-- Products rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="testimonials-header reveal">
+        <span class="section-label">Voices of Elegance</span>
+        <h2 class="section-title">What Our Clients Say</h2>
+        <p class="section-subtitle">Hear from women who have experienced the Royal Abaya difference.</p>
+      </div>
+      <div class="testimonials-track-wrapper">
+        <div class="testimonials-track" id="testimonialsTrack">
+          <div class="testimonial-card">
+            <div class="testimonial-inner">
+              <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+              <p class="testimonial-text">I was surprised by the quality at this price point. The fabric feels premium,
+                the stitching is neat, and the fit is perfect. Royal Abaya is now my go-to for modest fashion.</p>
+              <p class="testimonial-author">Ayesha Khan</p>
+              <p class="testimonial-location">Mumbai, India</p>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-inner">
+              <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+              <p class="testimonial-text">Finally, a brand that doesn't compromise on quality or charge exorbitant
+                prices. The abaya I received was beautifully packaged and fits like it was made for me.</p>
+              <p class="testimonial-author">Sana Fatima</p>
+              <p class="testimonial-location">Hyderabad, India</p>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-inner">
+              <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+              <p class="testimonial-text">I ordered for my sister's wedding and everyone asked where I got it from. The
+                embroidery detailing is stunning — you can tell this team truly understands fashion.</p>
+              <p class="testimonial-author">Mariam Shaikh</p>
+              <p class="testimonial-location">Delhi, India</p>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-inner">
+              <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+              <p class="testimonial-text">What I love about Royal Abaya is their honesty — exactly what you see online
+                is what you get. Great quality, fast delivery, and they respond instantly on WhatsApp.</p>
+              <p class="testimonial-author">Nazia Parveen</p>
+              <p class="testimonial-location">Bangalore, India</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonials-dots" id="testimonialsDots"></div>
       </div>
     </div>
   </section>
@@ -118,21 +184,22 @@
     <div class="container">
       <div class="about-grid">
         <div class="about-content reveal">
-          <span class="section-label">Our Heritage</span>
-          <h2 class="section-title">Crafting Elegance Since Generations</h2>
+          <span class="section-label">Our Story</span>
+          <h2 class="section-title">Dubai-Designed, Made for India</h2>
           <p class="about-text">
-            At Royal Abaya, we believe that modest fashion is an art form. Every stitch tells a story of heritage, every
-            fabric chosen with the discerning eye of a connoisseur.
+            Royal Abaya was born in Dubai — the heart of modern modest fashion. We set out to bring the same level of
+            design, fabric quality, and craftsmanship that Dubai is known for, directly to the Indian woman, at prices
+            that make sense.
           </p>
           <p class="about-text">
-            Our master artisans blend centuries-old techniques with contemporary design sensibilities, creating pieces
-            that honor tradition while embracing the modern woman's desire for sophistication and comfort.
+            As a young team with deep roots in the fashion world, we handpick every fabric, work closely with skilled
+            artisans, and obsess over every detail — so you get Dubai quality without the Dubai price tag.
           </p>
           <ul class="about-features">
-            <li>Premium hand-selected fabrics from the finest mills</li>
-            <li>Intricate hand-embroidered detailing</li>
-            <li>Each piece individually inspected for perfection</li>
-            <li>Personalized sizing and consultation available</li>
+            <li>Designed and conceptualized in Dubai</li>
+            <li>Premium fabrics sourced and quality-checked by our team</li>
+            <li>Honest pricing — no middlemen, no markups</li>
+            <li>Personal styling help available via WhatsApp</li>
           </ul>
         </div>
         <div class="about-image reveal">
@@ -145,32 +212,33 @@
   <!-- EXPERIENCE BANNER -->
   <section class="experience-banner" id="experience">
     <div class="container reveal">
-      <span class="section-label">The Experience</span>
-      <h2 class="section-title">Where Royalty Meets Modesty</h2>
-      <p class="section-subtitle">Join thousands of discerning women who have chosen Royal Abaya for their most
-        cherished moments.</p>
-      <a href="https://wa.me/+91XXXXXXXXXX?text=Hello%2C%20I%20would%20like%20to%20know%20more%20about%20your%20collection."
-        class="btn btn-whatsapp" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <span class="section-label">Why Royal Abaya</span>
+      <h2 class="section-title">Dubai Quality, Indian Prices</h2>
+      <p class="section-subtitle">We bring the best of Dubai's modest fashion heritage to India — quality you can trust,
+        at prices you'll love.</p>
+      <a href="https://wa.me/+91XXXXXXXXXX?text=I%20would%20like%20to%20request%20a%20private%20viewing%20of%20your%20exclusive%20collection.%20Please%20arrange%20a%20personal%20consultation."
+        class="btn btn-vip" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+          style="vertical-align: middle; margin-right: 6px;">
           <path
             d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
           <path
             d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.584-1.186A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.153 0-4.19-.577-5.94-1.588l-.42-.249-3.084.798.832-3.012-.276-.436A9.954 9.954 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z" />
         </svg>
-        Chat With Us
+        Request Private Viewing
       </a>
       <div class="experience-stats">
         <div class="stat">
-          <span class="stat-number">500+</span>
-          <span class="stat-label">Exclusive Designs</span>
+          <span class="stat-number">100%</span>
+          <span class="stat-label">Quality Checked</span>
         </div>
         <div class="stat">
-          <span class="stat-number">10K+</span>
-          <span class="stat-label">Happy Customers</span>
+          <span class="stat-number">🇦🇪</span>
+          <span class="stat-label">Designed in Dubai</span>
         </div>
         <div class="stat">
-          <span class="stat-number">15+</span>
-          <span class="stat-label">Years of Craft</span>
+          <span class="stat-number">🇮🇳</span>
+          <span class="stat-label">Pan India Delivery</span>
         </div>
       </div>
     </div>
@@ -182,8 +250,8 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <span class="brand-name">ROYAL ABAYA</span>
-          <p class="footer-description">Luxury modest fashion crafted with love, heritage, and an unwavering commitment
-            to elegance.</p>
+          <p class="footer-description">Dubai-designed modest fashion for the modern Indian woman — quality you deserve
+            at prices you'll love.</p>
         </div>
         <div class="footer-col">
           <h4>Quick Links</h4>
@@ -286,6 +354,23 @@
     <span class="toast-icon">✦</span>
     <span class="toast-text" id="toastText">Added to cart</span>
   </div>
+
+  <!-- GOLD CONFETTI CONTAINER -->
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/+91XXXXXXXXXX?text=Hello%2C%20I%20would%20like%20to%20know%20more%20about%20your%20collection."
+    class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+      <path
+        d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.584-1.186A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" />
+    </svg>
+  </a>
+
+  <!-- BACK TO TOP -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>

@@ -1582,3 +1582,718 @@ button {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ============================================
+   ROYAL ENHANCEMENT R1: Gold Particle Canvas
+   ============================================ */
+.particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R3: Scroll Progress Bar
+   ============================================ */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-gold-dark), var(--accent-gold), var(--accent-gold-light));
+  z-index: 10000;
+  transition: width 0.05s linear;
+  box-shadow: 0 0 8px var(--accent-gold-glow);
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R4: Custom Gold Cursor
+   ============================================ */
+@media (pointer: fine) {
+
+  .product-card,
+  .btn,
+  .navbar-links a,
+  .testimonial-card,
+  .size-option {
+    cursor: none;
+  }
+
+  .custom-cursor {
+    position: fixed;
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--accent-gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transition: transform 0.15s ease, opacity 0.2s ease, background 0.2s ease;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+    mix-blend-mode: difference;
+  }
+
+  .custom-cursor.visible {
+    opacity: 1;
+  }
+
+  .custom-cursor.active {
+    transform: translate(-50%, -50%) scale(1.6);
+    background: rgba(201, 169, 110, 0.15);
+    border-color: var(--accent-gold-light);
+  }
+
+  .custom-cursor-dot {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    background: var(--accent-gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .custom-cursor-dot.visible {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R5: Shimmer Brand Text
+   ============================================ */
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.navbar-brand .brand-name {
+  background: linear-gradient(120deg,
+      var(--text-primary) 0%,
+      var(--text-primary) 35%,
+      var(--accent-gold-light) 50%,
+      var(--text-primary) 65%,
+      var(--text-primary) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldShimmer 4s ease-in-out infinite;
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R6: Product Badges
+   ============================================ */
+@keyframes badgeShimmer {
+  0% {
+    background-position: -100% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.product-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  padding: 6px 14px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-badge.new-arrival {
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+  color: var(--text-dark);
+}
+
+.product-badge.bestseller {
+  background: linear-gradient(135deg, #1B2A4A, #2a3f6a);
+  color: var(--accent-gold-light);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+}
+
+.product-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: badgeShimmer 3s ease-in-out infinite;
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R7: Gold Confetti
+   ============================================ */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  animation: confettiFall 1.2s ease-out forwards;
+}
+
+.confetti-piece.gold {
+  background: var(--accent-gold);
+}
+
+.confetti-piece.light {
+  background: var(--accent-gold-light);
+}
+
+.confetti-piece.dark {
+  background: var(--accent-gold-dark);
+}
+
+.confetti-piece.star {
+  background: none;
+  color: var(--accent-gold);
+  font-size: 12px;
+  width: auto;
+  height: auto;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(120px) rotate(720deg) scale(0.3);
+  }
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R8: Parallax Ornaments
+   ============================================ */
+.parallax-ornaments {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.parallax-ornament {
+  position: absolute;
+  color: var(--accent-gold);
+  opacity: 0.04;
+  font-size: 1.5rem;
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+
+.parallax-ornament:nth-child(1) {
+  top: 15%;
+  left: 5%;
+  font-size: 1.2rem;
+}
+
+.parallax-ornament:nth-child(2) {
+  top: 30%;
+  right: 8%;
+  font-size: 2rem;
+}
+
+.parallax-ornament:nth-child(3) {
+  top: 55%;
+  left: 12%;
+  font-size: 1rem;
+}
+
+.parallax-ornament:nth-child(4) {
+  top: 70%;
+  right: 15%;
+  font-size: 1.8rem;
+}
+
+.parallax-ornament:nth-child(5) {
+  top: 85%;
+  left: 3%;
+  font-size: 1.4rem;
+}
+
+.parallax-ornament:nth-child(6) {
+  top: 40%;
+  left: 90%;
+  font-size: 1.1rem;
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R9: Testimonials
+   ============================================ */
+.testimonials {
+  background: var(--bg-secondary);
+  padding: 100px 0;
+  overflow: hidden;
+}
+
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.testimonials-header .section-subtitle {
+  margin: 0 auto;
+}
+
+.testimonials-track-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonial-card {
+  min-width: 100%;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+.testimonial-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  position: relative;
+}
+
+.testimonial-inner::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  left: 40px;
+  font-family: var(--font-display);
+  font-size: 6rem;
+  color: var(--accent-gold);
+  opacity: 0.15;
+  line-height: 1;
+}
+
+.testimonial-stars {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  color: var(--accent-gold);
+  font-size: 0.9rem;
+}
+
+.testimonial-text {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.testimonial-author {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+
+.testimonial-location {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.testimonials-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.testimonial-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-gold);
+  background: transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  padding: 0;
+}
+
+.testimonial-dot.active {
+  background: var(--accent-gold);
+  transform: scale(1.2);
+}
+
+/* ============================================
+   ROYAL ENHANCEMENT R10: VIP Button
+   ============================================ */
+@keyframes vipGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(201, 169, 110, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(201, 169, 110, 0.35), 0 0 60px rgba(201, 169, 110, 0.1);
+  }
+}
+
+.btn-vip {
+  background: transparent;
+  color: var(--accent-gold-light);
+  border: 1.5px solid var(--accent-gold);
+  padding: 16px 40px;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  animation: vipGlow 3s ease-in-out infinite;
+  margin-top: 16px;
+}
+
+.btn-vip:hover {
+  background: var(--accent-gold);
+  color: var(--text-dark);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   STANDARD UX 1: Search & Filter Bar
+   ============================================ */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.search-input:focus {
+  border-color: var(--accent-gold);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--border-accent);
+  border-radius: 30px;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: var(--text-dark);
+}
+
+/* ============================================
+   STANDARD UX 3: Image Zoom on Modal
+   ============================================ */
+.modal-image {
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.modal-image img {
+  transition: transform 0.3s ease;
+  transform-origin: center center;
+}
+
+.modal-image.zoomed img {
+  transform: scale(2);
+  cursor: zoom-out;
+}
+
+/* ============================================
+   STANDARD UX 4: Skeleton Loader
+   ============================================ */
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card-hover) 50%, var(--bg-secondary) 75%);
+  background-size: 800px 100%;
+  animation: skeletonShimmer 1.5s infinite linear;
+}
+
+.skeleton-body {
+  padding: 20px;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card-hover) 50%, var(--bg-secondary) 75%);
+  background-size: 800px 100%;
+  animation: skeletonShimmer 1.5s infinite linear;
+  margin-bottom: 12px;
+}
+
+.skeleton-line.short {
+  width: 40%;
+}
+
+.skeleton-line.medium {
+  width: 65%;
+}
+
+.skeleton-line.long {
+  width: 90%;
+}
+
+.skeleton-line.btn-skel {
+  height: 42px;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* ============================================
+   STANDARD UX 5: Floating WhatsApp Button
+   ============================================ */
+.whatsapp-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 4999;
+  width: 56px;
+  height: 56px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: all var(--transition-base);
+  animation: whatsappPulse 2.5s ease-in-out infinite;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
+}
+
+.whatsapp-float svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+}
+
+@keyframes whatsappPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4), 0 0 0 12px rgba(37, 211, 102, 0.08);
+  }
+}
+
+/* ============================================
+   STANDARD UX 6: Back-to-Top Button
+   ============================================ */
+.back-to-top {
+  position: fixed;
+  bottom: 96px;
+  right: 32px;
+  z-index: 4998;
+  width: 42px;
+  height: 42px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-gold);
+  font-size: 1.1rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: var(--accent-gold);
+  color: var(--text-dark);
+  transform: translateY(-3px);
+}
+
+/* ============================================
+   STANDARD UX 7: Product Count
+   ============================================ */
+.product-count {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+
+/* ============================================
+   RESPONSIVE ADDITIONS
+   ============================================ */
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input-wrapper {
+    min-width: unset;
+  }
+
+  .filter-chips {
+    justify-content: center;
+  }
+
+  .testimonial-card {
+    padding: 0 16px;
+  }
+
+  .testimonial-inner {
+    padding: 32px 24px;
+  }
+
+  .testimonial-text {
+    font-size: 1rem;
+  }
+
+  .whatsapp-float {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .back-to-top {
+    bottom: 82px;
+    right: 24px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .parallax-ornaments {
+    display: none;
+  }
+
+  .btn-vip {
+    padding: 14px 28px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials {
+    padding: 60px 0;
+  }
+}
