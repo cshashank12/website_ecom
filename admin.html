@@ -584,8 +584,10 @@
                 <span class="admin-header-badge">Admin</span>
             </div>
             <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <a href="dashboard.html" class="back-link">📊 Dashboard</a>
                 <a href="ledger.html" class="back-link">📒 Ledger</a>
                 <a href="receipt.html" class="back-link">🧾 Receipts</a>
+                <a href="receipt-history.html" class="back-link">📋 History</a>
                 <button id="logoutBtn" class="btn btn-ghost btn-small">Logout</button>
                 <a href="index.html" class="back-link">← View Store</a>
             </div>
@@ -605,6 +607,10 @@
                 <div class="stat-card">
                     <div class="stat-card-value" id="statAvgPrice">₹0</div>
                     <div class="stat-card-label">Avg. Price</div>
+                </div>
+                <div class="stat-card" style="border-color:rgba(249,115,22,0.25)">
+                    <div class="stat-card-value" id="statLowStock" style="color:#f97316">0</div>
+                    <div class="stat-card-label">Low Stock (&le;5)</div>
                 </div>
             </div>
 
@@ -641,6 +647,11 @@
                             <label class="form-label">Sizes (comma-separated)</label>
                             <input type="text" class="form-input" id="prodSizes" placeholder="S, M, L, XL"
                                 value="S, M, L, XL">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Stock Quantity</label>
+                            <input type="number" class="form-input" id="prodStock" placeholder="e.g. 10" min="0"
+                                step="1">
                         </div>
                         <div class="form-group full">
                             <label class="form-label">Description</label>
@@ -681,13 +692,14 @@
                                 <th>Product</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th>Stock</th>
                                 <th>Sizes</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="productsBody">
                             <tr>
-                                <td colspan="6" class="table-empty">No products added yet</td>
+                                <td colspan="7" class="table-empty">No products added yet</td>
                             </tr>
                         </tbody>
                     </table>

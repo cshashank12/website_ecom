@@ -113,6 +113,10 @@
         } else {
             document.getElementById('statAvgPrice').textContent = CURRENCY + '0';
         }
+
+        // Low stock count (stock defined AND <= 5)
+        const lowCount = products.filter(p => p.stock !== undefined && p.stock !== null && p.stock !== '' && Number(p.stock) <= 5).length;
+        document.getElementById('statLowStock').textContent = lowCount;
     }
 
     // ============================================
@@ -126,11 +130,23 @@
         countEl.textContent = products.length + ' products';
 
         if (products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No products added yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No products added yet</td></tr>';
             return;
         }
 
-        tbody.innerHTML = products.map(p => `
+        tbody.innerHTML = products.map(p => {
+            // Stock badge
+            let stockBadge;
+            if (p.stock === undefined || p.stock === null || p.stock === '') {
+                stockBadge = '<span style="color:var(--text-muted);font-size:0.75rem">—</span>';
+            } else if (Number(p.stock) <= 0) {
+                stockBadge = '<span style="background:rgba(231,76,60,0.15);color:#e74c3c;border:1px solid rgba(231,76,60,0.3);font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">Out of Stock</span>';
+            } else if (Number(p.stock) <= 5) {
+                stockBadge = `<span style="background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">Low: ${p.stock}</span>`;
+            } else {
+                stockBadge = `<span style="background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.2);font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">${p.stock}</span>`;
+            }
+            return `
       <tr>
         <td><img src="${p.image}" alt="${p.name}" class="product-thumb"></td>
         <td>
@@ -139,6 +155,7 @@
         </td>
         <td>${p.category || '—'}</td>
         <td class="product-table-price">${CURRENCY}${Number(p.price).toLocaleString('en-IN')}</td>
+        <td>${stockBadge}</td>
         <td>${(p.sizes || []).join(', ')}</td>
         <td>
           <div class="product-table-actions">
@@ -146,7 +163,8 @@
             <button class="btn btn-danger btn-small" onclick="ADMIN.deleteProduct('${p.id}')">Delete</button>
           </div>
         </td>
-      </tr>`).join('');
+      </tr>`;
+        }).join('');
     }
 
     // ============================================
@@ -181,6 +199,8 @@
             const category = document.getElementById('prodCategory').value;
             const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim()).filter(Boolean);
             const description = document.getElementById('prodDescription').value.trim();
+            const stockRaw = document.getElementById('prodStock').value.trim();
+            const stock = stockRaw !== '' ? Number(stockRaw) : null;
 
             if (!name || !price) return;
 
@@ -195,6 +215,7 @@
                         category,
                         sizes,
                         description,
+                        stock,
                     };
                     if (imageBase64) products[idx].image = imageBase64;
                 }
@@ -208,7 +229,7 @@
                 const id = 'RA-' + Date.now().toString(36).toUpperCase();
                 const image = imageBase64 || 'images/ezgif-frame-001.jpg';
 
-                products.push({ id, name, price: Number(price), category, sizes, description, image });
+                products.push({ id, name, price: Number(price), category, sizes, description, image, stock });
                 showToast('Product added!', 'success');
             }
 
@@ -227,6 +248,7 @@
             editingId = null;
             form.reset();
             document.getElementById('prodSizes').value = 'S, M, L, XL';
+            document.getElementById('prodStock').value = '';
             imageBase64 = '';
             preview.classList.remove('visible');
             document.getElementById('formTitle').textContent = 'Add New Product';
@@ -261,6 +283,7 @@
         document.getElementById('prodCategory').value = product.category || 'Classic';
         document.getElementById('prodSizes').value = (product.sizes || []).join(', ');
         document.getElementById('prodDescription').value = product.description || '';
+        document.getElementById('prodStock').value = (product.stock !== null && product.stock !== undefined) ? product.stock : '';
 
         if (product.image) {
             const preview = document.getElementById('imagePreview');

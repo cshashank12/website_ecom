@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Receipt History — Royal Abaya</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-input: #1C1C1C;
+            --accent-gold: #C9A96E;
+            --accent-gold-light: #E0C98D;
+            --accent-gold-glow: rgba(201, 169, 110, 0.15);
+            --text-primary: #F5F0E8;
+            --text-secondary: #A89F91;
+            --text-muted: #6B6560;
+            --text-dark: #0A0A0A;
+            --border-subtle: rgba(201, 169, 110, 0.12);
+            --border-accent: rgba(201, 169, 110, 0.3);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --transition-fast: 0.2s ease;
+            --transition-base: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            font-size: 16px
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh
+        }
+
+        /* Auth */
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s ease
+        }
+
+        .auth-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none
+        }
+
+        .auth-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            margin-bottom: 8px
+        }
+
+        .auth-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: min(320px, 90vw)
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-align: center;
+            outline: none;
+            transition: border-color var(--transition-fast);
+            font-family: var(--font-body)
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-gold)
+        }
+
+        .auth-input.error {
+            border-color: var(--danger);
+            animation: shake 0.4s ease
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            25% {
+                transform: translateX(-8px)
+            }
+
+            75% {
+                transform: translateX(8px)
+            }
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gold);
+            color: var(--text-dark);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background var(--transition-fast)
+        }
+
+        .auth-btn:hover {
+            background: var(--accent-gold-light)
+        }
+
+        /* Layout */
+        .rh-wrapper {
+            display: none
+        }
+
+        .rh-wrapper.visible {
+            display: block
+        }
+
+        .rh-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 100
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .header-brand {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            letter-spacing: 2px
+        }
+
+        .header-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: var(--accent-gold-glow);
+            color: var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-accent)
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .back-link {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast)
+        }
+
+        .back-link:hover {
+            color: var(--accent-gold)
+        }
+
+        .btn {
+            padding: 8px 16px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-accent);
+            color: var(--text-primary)
+        }
+
+        .btn-ghost:hover {
+            background: rgba(201, 169, 110, 0.08)
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.68rem
+        }
+
+        .btn-gold {
+            background: var(--accent-gold);
+            color: var(--text-dark)
+        }
+
+        .btn-gold:hover {
+            background: var(--accent-gold-light)
+        }
+
+        .rh-body {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 28px 20px
+        }
+
+        /* Search + Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color var(--transition-fast)
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-gold)
+        }
+
+        .filter-select {
+            padding: 12px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer
+        }
+
+        .filter-select:focus {
+            border-color: var(--accent-gold)
+        }
+
+        .filter-select option {
+            background: var(--bg-card)
+        }
+
+        /* Summary bar */
+        .summary-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            flex-wrap: wrap
+        }
+
+        .summary-stat {
+            display: flex;
+            flex-direction: column
+        }
+
+        .summary-val {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--accent-gold)
+        }
+
+        .summary-lbl {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        /* Receipts List */
+        .receipts-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 12px
+        }
+
+        .receipt-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: border-color var(--transition-fast)
+        }
+
+        .receipt-card:hover {
+            border-color: var(--border-accent)
+        }
+
+        .receipt-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            cursor: pointer
+        }
+
+        .rno-badge {
+            background: var(--accent-gold-glow);
+            border: 1px solid var(--border-accent);
+            color: var(--accent-gold);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+            flex-shrink: 0
+        }
+
+        .rcust {
+            flex: 1;
+            min-width: 0
+        }
+
+        .rcust-name {
+            font-size: 0.92rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .rcust-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px
+        }
+
+        .rtotal {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            white-space: nowrap
+        }
+
+        .rpay-badge {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            white-space: nowrap;
+            border: 1px solid var(--border-accent);
+            color: var(--text-secondary);
+            background: var(--accent-gold-glow)
+        }
+
+        .rchevron {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: transform var(--transition-fast);
+            flex-shrink: 0
+        }
+
+        .receipt-card.open .rchevron {
+            transform: rotate(180deg)
+        }
+
+        /* Expanded detail */
+        .receipt-detail {
+            display: none;
+            padding: 0 18px 16px;
+            border-top: 1px solid var(--border-subtle)
+        }
+
+        .receipt-card.open .receipt-detail {
+            display: block
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.82rem
+        }
+
+        .detail-table th {
+            text-align: left;
+            padding: 6px 4px;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted)
+        }
+
+        .detail-table td {
+            padding: 7px 4px;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.06);
+            color: var(--text-secondary)
+        }
+
+        .detail-table td:last-child {
+            text-align: right;
+            color: var(--text-primary);
+            font-weight: 500
+        }
+
+        .detail-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            color: var(--text-secondary)
+        }
+
+        .detail-total-row.grand {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-accent);
+            padding-top: 8px;
+            margin-top: 4px
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: #fff;
+            border: none
+        }
+
+        .btn-whatsapp:hover {
+            background: #1ebe5d
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted)
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.4
+        }
+
+        .empty-text {
+            font-size: 0.9rem
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 5000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 14px 22px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-base)
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1
+        }
+
+        .toast.success {
+            border-color: rgba(74, 222, 128, 0.3)
+        }
+
+        .toast.error {
+            border-color: rgba(231, 76, 60, 0.3)
+        }
+
+        /* Print receipt overlay */
+        #printOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center
+        }
+
+        #printOverlay.show {
+            display: flex
+        }
+
+        #printBox {
+            background: #fff;
+            color: #1a1a1a;
+            border-radius: 12px;
+            padding: 28px;
+            width: min(420px, 94vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            font-family: 'Inter', sans-serif;
+            position: relative
+        }
+
+        .print-close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #888
+        }
+
+        .print-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px
+        }
+
+        .print-btn {
+            flex: 1;
+            padding: 11px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer
+        }
+
+        .print-btn-gold {
+            background: #C9A96E;
+            color: #0A0A0A
+        }
+
+        .print-btn-wa {
+            background: #25D366;
+            color: #fff
+        }
+
+        /* Receipt inside overlay */
+        .r-top {
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #C9A96E
+        }
+
+        .r-shop {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #6b4e1c;
+            letter-spacing: 2px
+        }
+
+        .r-tagline {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 2px
+        }
+
+        .r-no {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 8px
+        }
+
+        .r-cust {
+            margin: 12px 0;
+            padding: 10px 12px;
+            background: #fdf8f0;
+            border-radius: 6px;
+            border-left: 3px solid #C9A96E
+        }
+
+        .r-cust-name {
+            font-weight: 600;
+            font-size: 0.9rem
+        }
+
+        .r-cust-phone {
+            font-size: 0.75rem;
+            color: #888
+        }
+
+        .r-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.8rem
+        }
+
+        .r-table th {
+            text-align: left;
+            padding: 5px 3px;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+            font-size: 0.68rem;
+            text-transform: uppercase
+        }
+
+        .r-table td {
+            padding: 6px 3px;
+            border-bottom: 1px solid #f5f5f5;
+            color: #333
+        }
+
+        .r-table td:last-child {
+            text-align: right;
+            font-weight: 500
+        }
+
+        .r-table th:last-child {
+            text-align: right
+        }
+
+        .r-totals {
+            margin-top: 10px
+        }
+
+        .r-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #666;
+            padding: 2px 0
+        }
+
+        .r-row.discount {
+            color: #e74c3c
+        }
+
+        .r-row.grand {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-top: 2px solid #C9A96E;
+            padding-top: 7px;
+            margin-top: 4px
+        }
+
+        .r-pay {
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: #fdf8f0;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            color: #6b4e1c;
+            font-weight: 600
+        }
+
+        .r-footer {
+            text-align: center;
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            font-size: 0.68rem;
+            color: #aaa
+        }
+
+        @media print {
+            #printOverlay {
+                display: flex !important;
+                position: static !important;
+                background: none
+            }
+
+            #printBox {
+                box-shadow: none
+            }
+
+            .print-actions,
+            .print-close {
+                display: none !important
+            }
+        }
+
+        @media(max-width:600px) {
+            .filter-bar {
+                flex-direction: column
+            }
+
+            .search-input {
+                min-width: 0
+            }
+
+            .summary-bar {
+                gap: 12px
+            }
+
+            .rh-body {
+                padding: 16px 12px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH GATE -->
+    <div class="auth-gate" id="authGate">
+        <div class="auth-brand">ROYAL ABAYA</div>
+        <div class="auth-subtitle">Receipt History</div>
+        <form class="auth-form" id="authForm">
+            <input type="email" class="auth-input" id="authEmail" placeholder="Admin Email" autocomplete="email"
+                required>
+            <input type="password" class="auth-input" id="authPassword" placeholder="Password"
+                autocomplete="current-password" required>
+            <button type="submit" class="auth-btn" id="authSubmit">Login</button>
+            <div id="authError" style="color:var(--danger);font-size:0.8rem;margin-top:4px;display:none"></div>
+        </form>
+    </div>
+
+    <!-- RECEIPT HISTORY WRAPPER -->
+    <div class="rh-wrapper" id="rhWrapper">
+        <header class="rh-header">
+            <div class="header-left">
+                <span class="header-brand">ROYAL ABAYA</span>
+                <span class="header-badge">Receipt History</span>
+            </div>
+            <div class="header-actions">
+                <a href="dashboard.html" class="back-link">📊 Dashboard</a>
+                <a href="receipt.html" class="back-link">+ New Receipt</a>
+                <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+            </div>
+        </header>
+
+        <div class="rh-body">
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" class="search-input" id="searchInput"
+                    placeholder="🔍  Search by customer name or phone…">
+                <select class="filter-select" id="payFilter">
+                    <option value="">All Payment Modes</option>
+                    <option value="UPI">📱 UPI</option>
+                    <option value="Cash">💵 Cash</option>
+                    <option value="Credit Card">💳 Credit Card</option>
+                </select>
+                <input type="date" class="filter-select" id="dateFilter" title="Filter by date">
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-bar" id="summaryBar">
+                <div class="summary-stat">
+                    <div class="summary-val" id="sumCount">0</div>
+                    <div class="summary-lbl">Receipts</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-val" id="sumTotal">₹0</div>
+                    <div class="summary-lbl">Total Revenue</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-val" id="sumAvg">₹0</div>
+                    <div class="summary-lbl">Avg. Order</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-val" id="sumUPI">0</div>
+                    <div class="summary-lbl">UPI Payments</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-val" id="sumCash">0</div>
+                    <div class="summary-lbl">Cash</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-val" id="sumCard">0</div>
+                    <div class="summary-lbl">Card</div>
+                </div>
+            </div>
+
+            <div class="receipts-count" id="receiptsCount">Loading receipts…</div>
+            <div id="receiptsList"></div>
+        </div>
+    </div>
+
+    <!-- Print / Preview Overlay -->
+    <div id="printOverlay">
+        <div id="printBox">
+            <button class="print-close" id="printClose">✕</button>
+            <div id="printContent"></div>
+            <div class="print-actions">
+                <button class="print-btn print-btn-gold" onclick="window.print()">🖨 Print</button>
+                <button class="print-btn print-btn-wa" id="overlayWaBtn">📲 WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastText"></span></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="receipt-history.js"></script>
+    <script>window.si = window.si || function () { (window.siq = window.siq || []).push(arguments) };</script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+
+</html>
