@@ -173,6 +173,99 @@ document.getElementById('printBtn').addEventListener('click', () => {
     setTimeout(() => window.print(), 100);
 });
 
+// ── WhatsApp Receipt ──────────────────────────────────────────
+document.getElementById('whatsappBtn').addEventListener('click', sendWhatsApp);
+
+function sendWhatsApp() {
+    const custName = document.getElementById('custName').value.trim() || 'Customer';
+    const custPhone = document.getElementById('custPhone').value.trim();
+
+    if (!custPhone) {
+        showToast('Please enter the customer phone number first.', 'error');
+        document.getElementById('custPhone').focus();
+        return;
+    }
+
+    // Normalise phone → international (default +91 India if no country code)
+    let phone = custPhone.replace(/[\s\-()]/g, '');
+    if (phone.startsWith('+')) {
+        phone = phone.slice(1); // remove leading +
+    } else if (phone.startsWith('0')) {
+        phone = '91' + phone.slice(1);
+    } else if (!phone.startsWith('91') || phone.length < 12) {
+        phone = '91' + phone;
+    }
+
+    // Build item lines
+    const rows = document.querySelectorAll('.item-row');
+    let subtotal = 0;
+    const itemLines = [];
+    rows.forEach(row => {
+        const name = row.querySelector('.item-name').value.trim();
+        const qty = parseInt(row.querySelector('.item-qty').value) || 1;
+        const mrp = parseFloat(row.querySelector('.item-mrp').value) || 0;
+        const lineTotal = qty * mrp;
+        subtotal += lineTotal;
+        if (name) {
+            itemLines.push(`  • ${name} × ${qty} = ₹${lineTotal.toLocaleString('en-IN')}`);
+        }
+    });
+
+    if (itemLines.length === 0) {
+        showToast('Please add at least one item.', 'error');
+        return;
+    }
+
+    // Discount & total
+    const flatVal = parseFloat(document.getElementById('discountFlat').value) || 0;
+    const pctVal = parseFloat(document.getElementById('discountPct').value) || 0;
+    let discount = flatVal > 0
+        ? Math.min(flatVal, subtotal)
+        : Math.min((pctVal / 100) * subtotal, subtotal);
+    const grandTotal = subtotal - discount;
+
+    // Receipt number & date
+    const receiptNo = document.getElementById('prevReceiptNo').textContent;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    // Payment icon
+    const payIcons = { 'UPI': '📱', 'Cash': '💵', 'Credit Card': '💳' };
+    const payIcon = payIcons[selectedPayment] || '💳';
+
+    // Compose message
+    const sep = '─────────────────────';
+    let msg = `🌟 *ROYAL ABAYA* 🌟\n_Elegance in Every Thread_\n\n`;
+    msg += `📄 *${receiptNo}*\n📅 ${dateStr}\n\n`;
+    msg += `👤 *Customer:* ${custName}\n`;
+    if (custPhone) msg += `📞 ${custPhone}\n`;
+    msg += `\n${sep}\n*Items*\n${sep}\n`;
+    msg += itemLines.join('\n') + '\n';
+    msg += `${sep}\n`;
+    msg += `Subtotal:   ₹${subtotal.toLocaleString('en-IN')}\n`;
+    if (discount > 0) {
+        msg += `Discount:   -₹${discount.toLocaleString('en-IN')}\n`;
+    }
+    msg += `*Total:     ₹${grandTotal.toLocaleString('en-IN')}*\n`;
+    msg += `${sep}\n`;
+    msg += `${payIcon} Paid via *${selectedPayment}*\n\n`;
+    msg += `_Thank you for shopping with Royal Abaya! 🛍️_\n`;
+    msg += `_For exchange/return, contact us within 7 days._`;
+
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+
+    const btn = document.getElementById('whatsappBtn');
+    btn.disabled = true;
+    btn.innerHTML = `<svg style="width:15px;height:15px;vertical-align:middle;margin-right:6px;" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Opening…`;
+    setTimeout(() => {
+        window.open(url, '_blank');
+        btn.disabled = false;
+        btn.innerHTML = `<svg style="width:15px;height:15px;vertical-align:middle;margin-right:6px;" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>WhatsApp`;
+    }, 300);
+}
+
+
+
 // ── Save Receipt to Firebase ─────────────────────────────────
 document.getElementById('saveBtn').addEventListener('click', async () => {
     const rows = document.querySelectorAll('.item-row');
