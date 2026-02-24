@@ -130,7 +130,7 @@
         countEl.textContent = products.length + ' products';
 
         if (products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No products added yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="table-empty">No products added yet</td></tr>';
             return;
         }
 
@@ -146,6 +146,44 @@
             } else {
                 stockBadge = `<span style="background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.2);font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">${p.stock}</span>`;
             }
+
+            // Margin / Min MRP column
+            const cost = (p.costPrice !== undefined && p.costPrice !== null && p.costPrice !== '') ? Number(p.costPrice) : null;
+            const price = Number(p.price);
+            let marginCell;
+            if (cost === null) {
+                marginCell = '<span style="color:var(--text-muted);font-size:0.75rem">—</span>';
+            } else if (price < cost) {
+                // Selling below cost — loss!
+                const loss = cost - price;
+                marginCell = `
+                    <div style="line-height:1.4">
+                        <span style="background:rgba(231,76,60,0.15);color:#e74c3c;border:1px solid rgba(231,76,60,0.3);font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">⚠ LOSS -₹${loss.toLocaleString('en-IN')}</span>
+                        <div style="font-size:0.67rem;color:var(--text-muted);margin-top:3px">Min MRP: <strong style="color:#f97316">₹${cost.toLocaleString('en-IN')}</strong></div>
+                    </div>`;
+            } else if (price === cost) {
+                marginCell = `
+                    <div style="line-height:1.4">
+                        <span style="background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.3);font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">Breakeven 0%</span>
+                        <div style="font-size:0.67rem;color:var(--text-muted);margin-top:3px">Min MRP: <strong style="color:#f97316">₹${cost.toLocaleString('en-IN')}</strong></div>
+                    </div>`;
+            } else {
+                const margin = Math.round(((price - cost) / cost) * 100);
+                const profit = price - cost;
+                const color = margin >= 20 ? '#4ade80' : '#f97316';
+                const bg = margin >= 20 ? 'rgba(74,222,128,0.1)' : 'rgba(249,115,22,0.12)';
+                const border = margin >= 20 ? 'rgba(74,222,128,0.25)' : 'rgba(249,115,22,0.3)';
+                marginCell = `
+                    <div style="line-height:1.4">
+                        <span style="background:${bg};color:${color};border:1px solid ${border};font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:20px">+${margin}% · ₹${profit.toLocaleString('en-IN')}</span>
+                        <div style="font-size:0.67rem;color:var(--text-muted);margin-top:3px">Min MRP: <strong style="color:var(--text-secondary)">₹${cost.toLocaleString('en-IN')}</strong></div>
+                    </div>`;
+            }
+
+            const costCell = cost !== null
+                ? `<span style="color:var(--text-secondary);font-size:0.85rem">₹${cost.toLocaleString('en-IN')}</span>`
+                : '<span style="color:var(--text-muted);font-size:0.75rem">—</span>';
+
             return `
       <tr>
         <td><img src="${p.image}" alt="${p.name}" class="product-thumb"></td>
@@ -154,9 +192,10 @@
           <div class="product-table-id">${p.id}</div>
         </td>
         <td>${p.category || '—'}</td>
-        <td class="product-table-price">${CURRENCY}${Number(p.price).toLocaleString('en-IN')}</td>
+        <td>${costCell}</td>
+        <td class="product-table-price">₹${price.toLocaleString('en-IN')}</td>
+        <td>${marginCell}</td>
         <td>${stockBadge}</td>
-        <td>${(p.sizes || []).join(', ')}</td>
         <td>
           <div class="product-table-actions">
             <button class="btn btn-ghost btn-small" onclick="ADMIN.editProduct('${p.id}')">Edit</button>
@@ -201,6 +240,8 @@
             const description = document.getElementById('prodDescription').value.trim();
             const stockRaw = document.getElementById('prodStock').value.trim();
             const stock = stockRaw !== '' ? Number(stockRaw) : null;
+            const costRaw = document.getElementById('prodCost').value.trim();
+            const costPrice = costRaw !== '' ? Number(costRaw) : null;
 
             if (!name || !price) return;
 
@@ -216,6 +257,7 @@
                         sizes,
                         description,
                         stock,
+                        costPrice,
                     };
                     if (imageBase64) products[idx].image = imageBase64;
                 }
@@ -229,7 +271,7 @@
                 const id = 'RA-' + Date.now().toString(36).toUpperCase();
                 const image = imageBase64 || 'images/ezgif-frame-001.jpg';
 
-                products.push({ id, name, price: Number(price), category, sizes, description, image, stock });
+                products.push({ id, name, price: Number(price), category, sizes, description, image, stock, costPrice });
                 showToast('Product added!', 'success');
             }
 
@@ -249,6 +291,7 @@
             form.reset();
             document.getElementById('prodSizes').value = 'S, M, L, XL';
             document.getElementById('prodStock').value = '';
+            document.getElementById('prodCost').value = '';
             imageBase64 = '';
             preview.classList.remove('visible');
             document.getElementById('formTitle').textContent = 'Add New Product';
@@ -284,6 +327,7 @@
         document.getElementById('prodSizes').value = (product.sizes || []).join(', ');
         document.getElementById('prodDescription').value = product.description || '';
         document.getElementById('prodStock').value = (product.stock !== null && product.stock !== undefined) ? product.stock : '';
+        document.getElementById('prodCost').value = (product.costPrice !== null && product.costPrice !== undefined) ? product.costPrice : ''
 
         if (product.image) {
             const preview = document.getElementById('imagePreview');
