@@ -147,11 +147,15 @@ function loadEntries(tab) {
             li.className = 'entry-item';
             const dotClass = tab === 'sales' ? 'dot-sale' : tab === 'purchases' ? 'dot-purchase' : 'dot-expense';
             const amtClass = tab === 'sales' ? 'amount-sale' : tab === 'purchases' ? 'amount-purchase' : 'amount-expense';
+            const autoBadge = entry.autoFromReceipt
+                ? `<span style="font-size:0.62rem;background:rgba(212,175,55,0.12);color:var(--accent-gold);border:1px solid rgba(212,175,55,0.25);border-radius:20px;padding:2px 7px;margin-left:6px;vertical-align:middle">🧾 Auto</span>`
+                : '';
+            const refLine = entry.receiptRef ? ` · ${escHtml(entry.receiptRef)}` : '';
             li.innerHTML = `
                 <div class="entry-dot ${dotClass}"></div>
                 <div class="entry-info">
-                    <div class="entry-desc">${escHtml(entry.desc)}</div>
-                    <div class="entry-meta">${formatDate(entry.date)} · ${escHtml(entry.category)}${entry.notes ? ' · ' + escHtml(entry.notes) : ''}</div>
+                    <div class="entry-desc">${escHtml(entry.desc)}${autoBadge}</div>
+                    <div class="entry-meta">${formatDate(entry.date)} · ${escHtml(entry.category)}${refLine}${entry.notes ? ' · ' + escHtml(entry.notes) : ''}</div>
                 </div>
                 <div class="entry-amount ${amtClass}">₹${Number(entry.amount).toLocaleString('en-IN')}</div>
                 <button class="entry-del" title="Delete entry" data-key="${entry.key}" data-tab="${tab}">🗑</button>

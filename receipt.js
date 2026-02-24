@@ -310,12 +310,25 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
         await db.ref('receiptCounter').set(receiptCounter);
         receiptCounter++;
         document.getElementById('prevReceiptNo').textContent = `Receipt #RA-${String(receiptCounter).padStart(4, '0')}`;
-        showToast('Receipt saved successfully!', 'success');
+
+        // ── Auto-sync to Ledger → Sales ──────────────────────────
+        const ledgerEntry = {
+            date: receipt.date,
+            amount: receipt.total,
+            desc: `${receipt.receiptNo} · ${receipt.customerName}`,
+            category: 'Abaya Sales',
+            notes: `${receipt.items.map(i => `${i.name} ×${i.qty}`).join(', ')} | ${receipt.paymentMode}`,
+            autoFromReceipt: true,   // flag: added automatically, not manually
+            receiptRef: receipt.receiptNo,
+        };
+        await db.ref('ledger/sales').push(ledgerEntry);
+
+        showToast('Receipt saved & ledger updated! ✓', 'success');
     } catch (err) {
         showToast('Failed to save. Check your connection.', 'error');
         console.error(err);
     } finally {
-        btn.textContent = '💾 Save Receipt';
+        btn.textContent = '💾 Save';
         btn.disabled = false;
     }
 });
