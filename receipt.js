@@ -5,6 +5,7 @@
 const auth = firebase.auth();
 let selectedPayment = 'UPI';
 let receiptCounter = 1;
+let productCache = []; // loaded once from Firebase
 
 // ── Auth ──────────────────────────────────────────────────────
 auth.onAuthStateChanged(user => {
@@ -44,7 +45,8 @@ document.getElementById('logoutBtn').addEventListener('click', () => auth.signOu
 // ── Init ──────────────────────────────────────────────────────
 function initReceipt() {
     setReceiptMeta();
-    addItemRow(); // start with one row
+    loadProductCache();   // fetch products for autocomplete
+    addItemRow();         // start with one row
     bindLiveUpdate();
     fetchReceiptCounter();
 }
@@ -63,6 +65,58 @@ function fetchReceiptCounter() {
     });
 }
 
+// ── Product Cache (for autocomplete) ─────────────────────────
+function loadProductCache() {
+    db.ref('products').once('value', snap => {
+        productCache = [];
+        snap.forEach(child => {
+            const p = child.val();
+            if (p && p.name) productCache.push({ name: p.name, price: Number(p.price) || 0, id: child.key });
+        });
+    });
+}
+
+// Attach autocomplete dropdown to an item-name input
+function attachAutocomplete(nameInput, mrpInput) {
+    let dropdown = null;
+
+    function closeDropdown() {
+        if (dropdown) { dropdown.remove(); dropdown = null; }
+    }
+
+    nameInput.addEventListener('input', () => {
+        closeDropdown();
+        const q = nameInput.value.trim().toLowerCase();
+        if (!q) return;
+        const matches = productCache.filter(p => p.name.toLowerCase().includes(q)).slice(0, 7);
+        if (matches.length === 0) return;
+
+        dropdown = document.createElement('ul');
+        dropdown.className = 'autocomplete-dropdown';
+        matches.forEach(p => {
+            const li = document.createElement('li');
+            li.className = 'autocomplete-item';
+            li.innerHTML = `<span class="ac-name">${escHtml(p.name)}</span><span class="ac-price">₹${p.price.toLocaleString('en-IN')}</span>`;
+            li.addEventListener('mousedown', e => {
+                e.preventDefault(); // prevent blur before click
+                nameInput.value = p.name;
+                mrpInput.value = p.price;
+                closeDropdown();
+                updatePreview();
+                mrpInput.focus();
+            });
+            dropdown.appendChild(li);
+        });
+
+        // Position relative to the input
+        nameInput.parentElement.style.position = 'relative';
+        nameInput.parentElement.appendChild(dropdown);
+    });
+
+    nameInput.addEventListener('blur', () => setTimeout(closeDropdown, 150));
+    nameInput.addEventListener('keydown', e => { if (e.key === 'Escape') closeDropdown(); });
+}
+
 // ── Item Rows ─────────────────────────────────────────────────
 let itemCount = 0;
 
@@ -73,7 +127,7 @@ function addItemRow(name = '', qty = 1, mrp = '') {
     row.className = 'item-row';
     row.id = `itemRow${itemCount}`;
     row.innerHTML = `
-        <input type="text"   class="form-input item-name" placeholder="Item name" value="${escHtml(name)}">
+        <input type="text"   class="form-input item-name" placeholder="Type to search product…" value="${escHtml(name)}">
         <input type="number" class="form-input item-qty"  placeholder="1" value="${qty}" min="1">
         <input type="number" class="form-input item-mrp"  placeholder="0" value="${mrp}" min="0" step="1">
         <button class="remove-item-btn" title="Remove">✕</button>
@@ -88,8 +142,16 @@ function addItemRow(name = '', qty = 1, mrp = '') {
     });
     // Live update on input
     row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updatePreview));
+
+    // Autocomplete on name field
+    const nameInput = row.querySelector('.item-name');
+    const mrpInput = row.querySelector('.item-mrp');
+    attachAutocomplete(nameInput, mrpInput);
+
     container.appendChild(row);
     updatePreview();
+    // Focus the name input for instant typing
+    if (!name) nameInput.focus();
 }
 
 document.getElementById('addItemBtn').addEventListener('click', () => addItemRow());
