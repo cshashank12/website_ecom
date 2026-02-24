@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>AED → INR Converter — Royal Abaya</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-input: #1C1C1C;
+            --accent-gold: #C9A96E;
+            --accent-gold-light: #E0C98D;
+            --accent-gold-glow: rgba(201, 169, 110, 0.15);
+            --text-primary: #F5F0E8;
+            --text-secondary: #A89F91;
+            --text-muted: #6B6560;
+            --border-subtle: rgba(201, 169, 110, 0.12);
+            --border-accent: rgba(201, 169, 110, 0.30);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 14px;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ── Auth Gate ── */
+        .auth-gate {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(ellipse at 50% 30%, rgba(201, 169, 110, 0.06) 0%, transparent 65%);
+        }
+
+        .auth-gate.hidden {
+            display: none;
+        }
+
+        .auth-brand {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--accent-gold);
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .auth-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 13px 16px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .auth-btn {
+            background: var(--accent-gold);
+            color: #0A0A0A;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        /* ── Wrapper ── */
+        .cv-wrapper {
+            display: none;
+        }
+
+        .cv-wrapper.visible {
+            display: block;
+        }
+
+        /* ── Header ── */
+        .cv-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 18px 32px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-secondary);
+            gap: 12px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            letter-spacing: 3px;
+        }
+
+        .header-badge {
+            background: var(--accent-gold-glow);
+            border: 1px solid var(--border-accent);
+            color: var(--accent-gold);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-gold);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 7px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: var(--font-body);
+        }
+
+        /* ── Body ── */
+        .cv-body {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 36px 24px 60px;
+        }
+
+        /* ── Rate Banner ── */
+        .rate-banner {
+            background: linear-gradient(135deg, rgba(201, 169, 110, 0.12) 0%, rgba(201, 169, 110, 0.04) 100%);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-lg);
+            padding: 28px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .rate-main {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .rate-flag {
+            font-size: 2rem;
+        }
+
+        .rate-num {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--accent-gold);
+            font-weight: 500;
+            line-height: 1;
+        }
+
+        .rate-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .rate-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .rate-right {
+            text-align: right;
+        }
+
+        .rate-updated {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .rate-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+        }
+
+        .rate-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 6px #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.4
+            }
+        }
+
+        .rate-loading {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .rate-err {
+            color: var(--danger);
+            font-size: 0.8rem;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border-accent);
+            color: var(--accent-gold);
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--accent-gold-glow);
+        }
+
+        /* ── Cards ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media(max-width:680px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cv-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+        }
+
+        .cv-card-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+
+        /* ── Form ── */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 7px;
+        }
+
+        .form-hint {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 11px 14px 11px 42px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .form-input.no-prefix {
+            padding-left: 14px;
+        }
+
+        /* ── Result Box ── */
+        .result-box {
+            background: rgba(201, 169, 110, 0.06);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.85rem;
+        }
+
+        .result-row:last-child {
+            border: none;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+        }
+
+        .result-val {
+            font-weight: 600;
+        }
+
+        .result-grand {
+            font-size: 1.05rem;
+            color: var(--accent-gold);
+        }
+
+        .result-profit {
+            color: #4ade80;
+        }
+
+        .result-loss {
+            color: var(--danger);
+        }
+
+        /* ── Bulk table ── */
+        .bulk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-top: 8px;
+        }
+
+        .bulk-table th {
+            text-align: left;
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bulk-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .bulk-table tr:last-child td {
+            border: none;
+        }
+
+        .bulk-table .gold {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 5000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 14px 22px;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH GATE -->
+    <div class="auth-gate" id="authGate">
+        <div class="auth-brand">ROYAL ABAYA</div>
+        <div class="auth-subtitle">Currency Converter</div>
+        <form class="auth-form" id="authForm">
+            <input type="email" class="auth-input" id="authEmail" placeholder="Admin Email" autocomplete="email"
+                required>
+            <input type="password" class="auth-input" id="authPassword" placeholder="Password"
+                autocomplete="current-password" required>
+            <button type="submit" class="auth-btn" id="authSubmit">Login</button>
+            <div id="authError" style="color:var(--danger);font-size:0.8rem;margin-top:4px;display:none;"></div>
+        </form>
+    </div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="cv-wrapper" id="cvWrapper">
+
+        <header class="cv-header">
+            <div class="header-left">
+                <span class="header-brand">ROYAL ABAYA</span>
+                <span class="header-badge">AED → INR</span>
+            </div>
+            <div class="header-actions">
+                <a href="admin.html" class="back-link">← Admin</a>
+                <a href="receipt.html" class="back-link">🧾 Receipts</a>
+                <a href="ledger.html" class="back-link">📒 Ledger</a>
+                <button class="btn-ghost" id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <div class="cv-body">
+
+            <!-- Live Rate Banner -->
+            <div class="rate-banner">
+                <div>
+                    <div class="rate-main">
+                        <span class="rate-flag">🇦🇪→🇮🇳</span>
+                        <div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px">1 AED =</div>
+                            <div class="rate-num" id="rateDisplay">—</div>
+                        </div>
+                        <div>
+                            <div class="rate-label" style="margin-top:12px">INR</div>
+                        </div>
+                    </div>
+                    <div class="rate-sub" id="rateUpdated" style="margin-top:8px"></div>
+                </div>
+                <div class="rate-right">
+                    <div class="rate-status"><span class="rate-dot" id="rateDot"
+                            style="background:#6B6560;box-shadow:none"></span><span id="rateStatusTxt">Fetching
+                            rate…</span></div>
+                    <div style="margin-top:12px"><button class="refresh-btn" id="refreshBtn">⟳ Refresh Rate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two columns -->
+            <div class="grid-2">
+
+                <!-- Quick Converter -->
+                <div class="cv-card">
+                    <div class="cv-card-title">Quick Converter</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Amount in AED</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">د.إ</span>
+                            <input type="number" class="form-input" id="qAed" placeholder="e.g. 150" min="0"
+                                step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount in INR</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">₹</span>
+                            <input type="number" class="form-input" id="qInr" placeholder="e.g. 3400" min="0"
+                                step="0.01">
+                        </div>
+                        <div class="form-hint">Edit either field to convert both ways</div>
+                    </div>
+
+                    <!-- Bulk quick reference -->
+                    <div style="margin-top:24px">
+                        <div
+                            style="font-size:0.72rem;color:var(--text-muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px">
+                            Quick Reference</div>
+                        <table class="bulk-table" id="bulkTable">
+                            <thead>
+                                <tr>
+                                    <th>AED</th>
+                                    <th>INR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cost Calculator -->
+                <div class="cv-card">
+                    <div class="cv-card-title">Cost & Selling Price Calculator</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Product Cost (AED)</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">د.إ</span>
+                            <input type="number" class="form-input" id="cAed" placeholder="e.g. 120" min="0"
+                                step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Shipping per Item (₹ INR)</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">₹</span>
+                            <input type="number" class="form-input" id="cShip" placeholder="e.g. 250" min="0" step="1"
+                                value="250">
+                        </div>
+                        <div class="form-hint">Include customs, handling, last-mile</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Customs / Import Duty (%)</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">%</span>
+                            <input type="number" class="form-input" id="cDuty" placeholder="e.g. 0" min="0" max="100"
+                                step="0.1" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Desired Margin (%)</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">%</span>
+                            <input type="number" class="form-input" id="cMargin" placeholder="e.g. 40" min="0" step="1"
+                                value="40">
+                        </div>
+                    </div>
+
+                    <div class="result-box" id="calcResult" style="display:none">
+                        <div class="result-row"><span class="result-label">Cost (AED→INR)</span><span class="result-val"
+                                id="rCostInr">—</span></div>
+                        <div class="result-row"><span class="result-label">+ Shipping</span><span class="result-val"
+                                id="rShip">—</span></div>
+                        <div class="result-row"><span class="result-label">+ Customs Duty</span><span class="result-val"
+                                id="rDuty">—</span></div>
+                        <div class="result-row"><span class="result-label">Total Cost (Break-even)</span><span
+                                class="result-val result-grand" id="rBreak">—</span></div>
+                        <div class="result-row" style="margin-top:8px"><span class="result-label">Suggested Selling
+                                Price</span><span class="result-val result-grand" id="rSell">—</span></div>
+                        <div class="result-row"><span class="result-label">Your Profit</span><span
+                                class="result-val result-profit" id="rProfit">—</span></div>
+                    </div>
+
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:14px;line-height:1.6">
+                        💡 <strong>Minimum MRP</strong> = break-even price. Never price below this to avoid a loss.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Multi-item Shipment Calculator -->
+            <div class="cv-card" style="margin-top:24px">
+                <div class="cv-card-title">Shipment Batch Calculator</div>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:20px">Enter multiple items in one
+                    shipment to see individual and total costs.</p>
+
+                <div id="batchRows">
+                    <!-- rows injected by JS -->
+                </div>
+                <button class="refresh-btn" id="addBatchRow" style="margin-top:12px">+ Add Item</button>
+
+                <div class="result-box" style="margin-top:20px" id="batchResult">
+                    <div class="result-row"><span class="result-label">Total Shipment Cost (AED)</span><span
+                            class="result-val gold" id="bTotalAed">—</span></div>
+                    <div class="result-row"><span class="result-label">Total Shipment Cost (INR)</span><span
+                            class="result-val gold" id="bTotalInr">—</span></div>
+                    <div class="result-row"><span class="result-label">+ Shipping (total)</span><span class="result-val"
+                            id="bTotalShip">—</span></div>
+                    <div class="result-row"><span class="result-label">Grand Total Landed Cost</span><span
+                            class="result-val result-grand" id="bGrand">—</span></div>
+                </div>
+            </div>
+
+        </div><!-- /cv-body -->
+    </div><!-- /cv-wrapper -->
+
+    <div class="toast" id="toast"><span id="toastText"></span></div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        /* ─────────────────────────────────────────────────────────────
+           AED → INR Converter + Cost Calculator
+        ───────────────────────────────────────────────────────────── */
+
+        const auth = firebase.auth();
+        let liveRate = null;
+
+        // ── Auth ──────────────────────────────────────────────────────
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('authGate').classList.add('hidden');
+                document.getElementById('cvWrapper').classList.add('visible');
+                fetchRate();
+                initBatch();
+            } else {
+                document.getElementById('authGate').classList.remove('hidden');
+                document.getElementById('cvWrapper').classList.remove('visible');
+            }
+        });
+
+        document.getElementById('authForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('authSubmit');
+            const err = document.getElementById('authError');
+            btn.textContent = 'Logging in…'; btn.disabled = true; err.style.display = 'none';
+            try {
+                await auth.signInWithEmailAndPassword(
+                    document.getElementById('authEmail').value.trim(),
+                    document.getElementById('authPassword').value
+                );
+            } catch {
+                err.textContent = 'Invalid credentials.'; err.style.display = 'block';
+                btn.textContent = 'Login'; btn.disabled = false;
+            }
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+
+        // ── Fetch Live Rate ───────────────────────────────────────────
+        async function fetchRate() {
+            const dot = document.getElementById('rateDot');
+            const stxt = document.getElementById('rateStatusTxt');
+            dot.style.background = '#f97316'; dot.style.boxShadow = '0 0 6px #f97316';
+            stxt.textContent = 'Fetching…';
+            try {
+                const res = await fetch('https://api.frankfurter.app/latest?from=AED&to=INR');
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+                liveRate = data.rates.INR;
+                document.getElementById('rateDisplay').textContent = liveRate.toFixed(4);
+                document.getElementById('rateUpdated').textContent = `Rate date: ${data.date}`;
+                dot.style.background = '#4ade80'; dot.style.boxShadow = '0 0 6px #4ade80';
+                stxt.textContent = 'Live rate';
+                renderBulk();
+                recalcCost();
+                recalcBatch();
+            } catch {
+                stxt.textContent = 'Error — using fallback';
+                dot.style.background = '#e74c3c'; dot.style.boxShadow = '0 0 6px #e74c3c';
+                // Fallback approximate rate
+                liveRate = 22.85;
+                document.getElementById('rateDisplay').textContent = liveRate.toFixed(4) + '*';
+                document.getElementById('rateUpdated').textContent = '* Offline fallback rate';
+                renderBulk();
+            }
+        }
+        document.getElementById('refreshBtn').addEventListener('click', fetchRate);
+
+        // ── Quick Converter ───────────────────────────────────────────
+        const qAed = document.getElementById('qAed');
+        const qInr = document.getElementById('qInr');
+        let lastEdited = 'aed';
+
+        qAed.addEventListener('input', () => { lastEdited = 'aed'; syncQuick(); });
+        qInr.addEventListener('input', () => { lastEdited = 'inr'; syncQuick(); });
+
+        function syncQuick() {
+            if (!liveRate) return;
+            if (lastEdited === 'aed') {
+                const v = parseFloat(qAed.value);
+                qInr.value = isNaN(v) ? '' : (v * liveRate).toFixed(2);
+            } else {
+                const v = parseFloat(qInr.value);
+                qAed.value = isNaN(v) ? '' : (v / liveRate).toFixed(2);
+            }
+        }
+
+        // ── Bulk Reference Table ──────────────────────────────────────
+        const BULK_AMTS = [50, 100, 150, 200, 300, 500, 750, 1000];
+        function renderBulk() {
+            const tbody = document.getElementById('bulkBody');
+            tbody.innerHTML = BULK_AMTS.map(a => `
+            <tr>
+                <td style="color:var(--text-secondary)">د.إ ${a.toLocaleString('en-IN')}</td>
+                <td class="gold">₹${(a * liveRate).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
+            </tr>`).join('');
+        }
+
+        // ── Cost Calculator ───────────────────────────────────────────
+        ['cAed', 'cShip', 'cDuty', 'cMargin'].forEach(id =>
+            document.getElementById(id).addEventListener('input', recalcCost));
+
+        function recalcCost() {
+            if (!liveRate) return;
+            const aed = parseFloat(document.getElementById('cAed').value);
+            const ship = parseFloat(document.getElementById('cShip').value) || 0;
+            const duty = parseFloat(document.getElementById('cDuty').value) || 0;
+            const margin = parseFloat(document.getElementById('cMargin').value) || 0;
+
+            if (isNaN(aed) || aed <= 0) {
+                document.getElementById('calcResult').style.display = 'none'; return;
+            }
+            document.getElementById('calcResult').style.display = 'block';
+
+            const costInr = aed * liveRate;
+            const dutyAmt = costInr * (duty / 100);
+            const totalCost = costInr + ship + dutyAmt;   // break-even
+            const sellPrice = totalCost * (1 + margin / 100);
+            const profit = sellPrice - totalCost;
+
+            const fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+            document.getElementById('rCostInr').textContent = fmt(costInr);
+            document.getElementById('rShip').textContent = fmt(ship);
+            document.getElementById('rDuty').textContent = duty > 0 ? fmt(dutyAmt) : '—';
+            document.getElementById('rBreak').textContent = fmt(totalCost);
+            document.getElementById('rSell').textContent = fmt(sellPrice);
+            const profEl = document.getElementById('rProfit');
+            profEl.textContent = fmt(profit);
+            profEl.className = 'result-val ' + (profit >= 0 ? 'result-profit' : 'result-loss');
+        }
+
+        // ── Batch Calculator ──────────────────────────────────────────
+        let batchCount = 0;
+
+        function initBatch() {
+            addBatchRow(); addBatchRow(); // start with 2 rows
+        }
+
+        function addBatchRow() {
+            batchCount++;
+            const row = document.createElement('div');
+            row.className = 'batch-row';
+            row.id = 'br' + batchCount;
+            row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;margin-bottom:10px;align-items:end';
+            row.innerHTML = `
+            <div>
+                ${batchCount === 1 ? '<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:5px;letter-spacing:0.5px">ITEM</div>' : ''}
+                <input type="text" class="form-input no-prefix" placeholder="Item name (optional)" style="font-size:0.82rem;padding:9px 12px">
+            </div>
+            <div>
+                ${batchCount === 1 ? '<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:5px;letter-spacing:0.5px">COST (AED)</div>' : ''}
+                <div class="input-wrap"><span class="input-prefix" style="font-size:0.8rem">د.إ</span><input type="number" class="form-input batch-aed" placeholder="120" min="0" step="0.01" style="font-size:0.82rem;padding:9px 12px 9px 38px"></div>
+            </div>
+            <div>
+                ${batchCount === 1 ? '<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:5px;letter-spacing:0.5px">QTY</div>' : ''}
+                <input type="number" class="form-input no-prefix batch-qty" placeholder="1" min="1" value="1" style="font-size:0.82rem;padding:9px 12px">
+            </div>
+            <button onclick="this.closest('.batch-row').remove();recalcBatch()" style="background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.25);color:#e74c3c;border-radius:var(--radius-sm);padding:9px 10px;cursor:pointer;font-size:0.9rem;${batchCount === 1 ? 'margin-top:20px' : ''}">✕</button>
+        `;
+            row.querySelectorAll('input').forEach(i => i.addEventListener('input', recalcBatch));
+            document.getElementById('batchRows').appendChild(row);
+        }
+
+        document.getElementById('addBatchRow').addEventListener('click', () => { addBatchRow(); });
+
+        function recalcBatch() {
+            if (!liveRate) return;
+            let totalAed = 0, totalShip = 0;
+            document.querySelectorAll('.batch-row').forEach(row => {
+                const aed = parseFloat(row.querySelector('.batch-aed').value) || 0;
+                const qty = parseInt(row.querySelector('.batch-qty').value) || 1;
+                totalAed += aed * qty;
+            });
+            const ship = parseFloat(document.getElementById('cShip').value) || 0;
+            // Use per-item shipping from cost calc × count of rows × qty
+            let itemCount = 0;
+            document.querySelectorAll('.batch-row').forEach(row => {
+                itemCount += parseInt(row.querySelector('.batch-qty').value) || 1;
+            });
+            totalShip = ship * itemCount;
+            const totalInr = totalAed * liveRate;
+            const grand = totalInr + totalShip;
+
+            const fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+            document.getElementById('bTotalAed').textContent = 'د.إ ' + totalAed.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+            document.getElementById('bTotalInr').textContent = fmt(totalInr);
+            document.getElementById('bTotalShip').textContent = fmt(totalShip) + ` (${itemCount} items × ₹${ship})`;
+            document.getElementById('bGrand').textContent = fmt(grand);
+        }
+
+        // ── Toast ─────────────────────────────────────────────────────
+        let _tt;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastText').textContent = msg;
+            t.classList.add('visible');
+            clearTimeout(_tt);
+            _tt = setTimeout(() => t.classList.remove('visible'), 3000);
+        }
+    </script>
+</body>
+
+</html>
