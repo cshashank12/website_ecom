@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Business Ledger — Royal Abaya</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-input: #1C1C1C;
+            --accent-gold: #C9A96E;
+            --accent-gold-light: #E0C98D;
+            --accent-gold-dark: #A88B4A;
+            --accent-gold-glow: rgba(201, 169, 110, 0.15);
+            --text-primary: #F5F0E8;
+            --text-secondary: #A89F91;
+            --text-muted: #6B6560;
+            --text-dark: #0A0A0A;
+            --border-subtle: rgba(201, 169, 110, 0.12);
+            --border-accent: rgba(201, 169, 110, 0.3);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --transition-fast: 0.2s ease;
+            --transition-base: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --sale-color: #4ade80;
+            --purchase-color: #f97316;
+            --expense-color: #a78bfa;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Auth Gate ── */
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .auth-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .auth-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: min(320px, 90vw);
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            text-align: center;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .auth-input.error {
+            border-color: var(--danger);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gold);
+            color: var(--text-dark);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .auth-btn:hover {
+            background: var(--accent-gold-light);
+        }
+
+        /* ── Layout ── */
+        .ledger-wrapper {
+            display: none;
+        }
+
+        .ledger-wrapper.visible {
+            display: block;
+        }
+
+        .ledger-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+        }
+
+        .header-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: var(--accent-gold-glow);
+            color: var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-accent);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .back-link {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--accent-gold);
+        }
+
+        .ledger-body {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 28px 20px;
+        }
+
+        /* ── Summary Cards ── */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+        }
+
+        .summary-card-value {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .summary-card-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .val-sale {
+            color: var(--sale-color);
+        }
+
+        .val-purchase {
+            color: var(--purchase-color);
+        }
+
+        .val-expense {
+            color: var(--expense-color);
+        }
+
+        .val-profit {
+            color: var(--accent-gold);
+        }
+
+        /* ── Tabs ── */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all var(--transition-fast);
+        }
+
+        .tab-btn.active-sale {
+            background: rgba(74, 222, 128, 0.12);
+            color: var(--sale-color);
+        }
+
+        .tab-btn.active-purchase {
+            background: rgba(249, 115, 22, 0.12);
+            color: var(--purchase-color);
+        }
+
+        .tab-btn.active-expense {
+            background: rgba(167, 139, 250, 0.12);
+            color: var(--expense-color);
+        }
+
+        /* ── Entry Form ── */
+        .entry-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .entry-card-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .form-select option {
+            background: var(--bg-card);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-gold {
+            background: var(--accent-gold);
+            color: var(--text-dark);
+        }
+
+        .btn-gold:hover {
+            background: var(--accent-gold-light);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-accent);
+            color: var(--text-primary);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(201, 169, 110, 0.08);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid rgba(231, 76, 60, 0.35);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .btn-small {
+            padding: 7px 14px;
+            font-size: 0.68rem;
+        }
+
+        /* ── Entries List ── */
+        .entries-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .entries-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .entries-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+        }
+
+        .entries-count {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .entries-list {
+            list-style: none;
+        }
+
+        .entry-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background var(--transition-fast);
+        }
+
+        .entry-item:last-child {
+            border-bottom: none;
+        }
+
+        .entry-item:hover {
+            background: rgba(201, 169, 110, 0.03);
+        }
+
+        .entry-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-sale {
+            background: var(--sale-color);
+        }
+
+        .dot-purchase {
+            background: var(--purchase-color);
+        }
+
+        .dot-expense {
+            background: var(--expense-color);
+        }
+
+        .entry-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .entry-desc {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .entry-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .entry-amount {
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .amount-sale {
+            color: var(--sale-color);
+        }
+
+        .amount-purchase {
+            color: var(--purchase-color);
+        }
+
+        .amount-expense {
+            color: var(--expense-color);
+        }
+
+        .entry-del {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            transition: color var(--transition-fast);
+        }
+
+        .entry-del:hover {
+            color: var(--danger);
+        }
+
+        .entries-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 5000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-base);
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+
+        .toast.error {
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: 1;
+            }
+
+            .ledger-body {
+                padding: 20px 14px;
+            }
+
+            .tab-btn {
+                font-size: 0.72rem;
+                padding: 10px 4px;
+                letter-spacing: 0;
+            }
+
+            .summary-card-value {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH GATE -->
+    <div class="auth-gate" id="authGate">
+        <div class="auth-brand">ROYAL ABAYA</div>
+        <div class="auth-subtitle">Business Ledger</div>
+        <form class="auth-form" id="authForm">
+            <input type="email" class="auth-input" id="authEmail" placeholder="Admin Email" autocomplete="email"
+                required>
+            <input type="password" class="auth-input" id="authPassword" placeholder="Password"
+                autocomplete="current-password" required>
+            <button type="submit" class="auth-btn" id="authSubmit">Login</button>
+            <div id="authError" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: none;"></div>
+        </form>
+    </div>
+
+    <!-- LEDGER WRAPPER -->
+    <div class="ledger-wrapper" id="ledgerWrapper">
+
+        <!-- Header -->
+        <header class="ledger-header">
+            <div class="header-left">
+                <span class="header-brand">ROYAL ABAYA</span>
+                <span class="header-badge">Ledger</span>
+            </div>
+            <div class="header-actions">
+                <a href="receipt.html" class="back-link">🧾 Receipts</a>
+                <a href="admin.html" class="back-link">← Admin</a>
+                <button id="logoutBtn" class="btn btn-ghost btn-small">Logout</button>
+            </div>
+        </header>
+
+        <div class="ledger-body">
+
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-card-value val-sale" id="totalSales">₹0</div>
+                    <div class="summary-card-label">Total Sales</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-value val-purchase" id="totalPurchases">₹0</div>
+                    <div class="summary-card-label">Purchases</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-value val-expense" id="totalExpenses">₹0</div>
+                    <div class="summary-card-label">Expenses</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-value val-profit" id="netProfit">₹0</div>
+                    <div class="summary-card-label">Net Profit</div>
+                </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <button class="tab-btn" data-tab="sales" id="tabSales">💚 Sales</button>
+                <button class="tab-btn" data-tab="purchases" id="tabPurchases">🟠 Purchases</button>
+                <button class="tab-btn" data-tab="expenses" id="tabExpenses">🟣 Expenses</button>
+            </div>
+
+            <!-- Entry Form -->
+            <div class="entry-card">
+                <div class="entry-card-title" id="formTitle">Add Sale Entry</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Date *</label>
+                        <input type="date" class="form-input" id="entryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount (₹) *</label>
+                        <input type="number" class="form-input" id="entryAmount" placeholder="0.00" min="0" step="0.01"
+                            required>
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">Description *</label>
+                        <input type="text" class="form-input" id="entryDesc"
+                            placeholder="e.g. Sold 3 abayas to customer" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="entryCategory">
+                            <option value="General">General</option>
+                            <option value="Online">Online</option>
+                            <option value="Walk-in">Walk-in</option>
+                            <option value="Bulk Order">Bulk Order</option>
+                            <option value="Fabric">Fabric</option>
+                            <option value="Stitching">Stitching</option>
+                            <option value="Shipping">Shipping</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Rent">Rent</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <input type="text" class="form-input" id="entryNotes" placeholder="Optional notes">
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-gold" id="addEntryBtn">Add Entry</button>
+                </div>
+            </div>
+
+            <!-- Entries List -->
+            <div class="entries-card">
+                <div class="entries-header">
+                    <span class="entries-title" id="listTitle">Sales Entries</span>
+                    <span class="entries-count" id="entriesCount">0 entries</span>
+                </div>
+                <ul class="entries-list" id="entriesList">
+                    <li class="entries-empty" id="entriesEmpty">No entries yet. Add your first entry above.</li>
+                </ul>
+            </div>
+
+        </div><!-- /body -->
+    </div><!-- /wrapper -->
+
+    <!-- Toast -->
+    <div class="toast" id="toast"><span id="toastText">Saved</span></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="ledger.js"></script>
+
+    <!-- Vercel Speed Insights -->
+    <script>window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };</script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+
+</html>

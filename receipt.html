@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Receipt Generator — Royal Abaya</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Vercel Web Analytics -->
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-input: #1C1C1C;
+            --accent-gold: #C9A96E;
+            --accent-gold-light: #E0C98D;
+            --accent-gold-glow: rgba(201, 169, 110, 0.15);
+            --text-primary: #F5F0E8;
+            --text-secondary: #A89F91;
+            --text-muted: #6B6560;
+            --text-dark: #0A0A0A;
+            --border-subtle: rgba(201, 169, 110, 0.12);
+            --border-accent: rgba(201, 169, 110, 0.3);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --transition-fast: 0.2s ease;
+            --transition-base: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Auth Gate ── */
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .auth-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .auth-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: min(320px, 90vw);
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            text-align: center;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .auth-input.error {
+            border-color: var(--danger);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            25% {
+                transform: translateX(-8px)
+            }
+
+            75% {
+                transform: translateX(8px)
+            }
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gold);
+            color: var(--text-dark);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .auth-btn:hover {
+            background: var(--accent-gold-light);
+        }
+
+        /* ── Layout ── */
+        .receipt-wrapper {
+            display: none;
+        }
+
+        .receipt-wrapper.visible {
+            display: block;
+        }
+
+        .page-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+        }
+
+        .header-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: var(--accent-gold-glow);
+            color: var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-accent);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .back-link {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--accent-gold);
+        }
+
+        .page-body {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── Form Panel ── */
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border-subtle);
+            margin: 20px 0;
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select {
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            outline: none;
+            width: 100%;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .form-select option {
+            background: var(--bg-card);
+        }
+
+        /* ── Item Rows ── */
+        .items-header {
+            display: grid;
+            grid-template-columns: 2fr 60px 90px 40px;
+            gap: 8px;
+            padding: 0 0 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 60px 90px 40px;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .item-row .form-input {
+            padding: 10px 12px;
+        }
+
+        .remove-item-btn {
+            background: none;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: var(--danger);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            padding: 10px;
+            font-size: 0.85rem;
+            line-height: 1;
+            transition: background var(--transition-fast);
+        }
+
+        .remove-item-btn:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .add-item-btn {
+            background: none;
+            border: 1px dashed var(--border-accent);
+            color: var(--accent-gold);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            padding: 10px 16px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 8px;
+            transition: all var(--transition-fast);
+        }
+
+        .add-item-btn:hover {
+            background: var(--accent-gold-glow);
+        }
+
+        /* ── Discount & Payment ── */
+        .discount-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .payment-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .payment-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pay-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            letter-spacing: 0.5px;
+            transition: all var(--transition-fast);
+        }
+
+        .pay-btn.active {
+            background: var(--accent-gold-glow);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 22px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .btn-gold {
+            background: var(--accent-gold);
+            color: var(--text-dark);
+        }
+
+        .btn-gold:hover {
+            background: var(--accent-gold-light);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-accent);
+            color: var(--text-primary);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(201, 169, 110, 0.08);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid rgba(231, 76, 60, 0.35);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        /* ── Receipt Preview (Screen) ── */
+        .receipt-preview-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            position: sticky;
+            top: 80px;
+        }
+
+        .preview-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* ── Printable Receipt ── */
+        .receipt {
+            background: #fff;
+            color: #1a1a1a;
+            border-radius: 8px;
+            padding: 24px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .receipt-top {
+            text-align: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #C9A96E;
+        }
+
+        .receipt-shop {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #6b4e1c;
+            letter-spacing: 2px;
+        }
+
+        .receipt-tagline {
+            font-size: 0.7rem;
+            color: #888;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .receipt-no {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .receipt-date {
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .receipt-customer {
+            margin: 14px 0;
+            padding: 10px 12px;
+            background: #fdf8f0;
+            border-radius: 6px;
+            border-left: 3px solid #C9A96E;
+        }
+
+        .receipt-customer-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .receipt-customer-phone {
+            font-size: 0.78rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 0.8rem;
+        }
+
+        .receipt-table th {
+            text-align: left;
+            padding: 6px 4px;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .receipt-table td {
+            padding: 7px 4px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        .receipt-table td:last-child {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .receipt-table th:last-child {
+            text-align: right;
+        }
+
+        .receipt-totals {
+            margin-top: 12px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: #555;
+            padding: 3px 0;
+        }
+
+        .receipt-row.total {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-top: 2px solid #C9A96E;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .receipt-row.discount {
+            color: #e74c3c;
+        }
+
+        .receipt-payment {
+            margin-top: 14px;
+            padding: 8px 12px;
+            background: #fdf8f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #6b4e1c;
+            font-weight: 600;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 18px;
+            padding-top: 12px;
+            border-top: 1px dashed #ddd;
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 5000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            padding: 14px 22px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-base);
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+
+        .toast.error {
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 780px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .receipt-preview-card {
+                position: static;
+            }
+
+            .form-grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .discount-row {
+                grid-template-columns: 1fr;
+            }
+
+            .page-body {
+                padding: 20px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .items-header {
+                grid-template-columns: 1fr 50px 80px 36px;
+            }
+
+            .item-row {
+                grid-template-columns: 1fr 50px 80px 36px;
+            }
+
+            .payment-options {
+                flex-wrap: wrap;
+            }
+
+            .pay-btn {
+                min-width: calc(50% - 4px);
+            }
+        }
+
+        /* ── Print Styles ── */
+        @media print {
+            body {
+                background: #fff !important;
+            }
+
+            .auth-gate,
+            .page-header,
+            .form-card,
+            .preview-label,
+            .action-row,
+            .toast {
+                display: none !important;
+            }
+
+            .receipt-wrapper {
+                display: block !important;
+            }
+
+            .two-col {
+                display: block !important;
+            }
+
+            .receipt-preview-card {
+                border: none !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
+            .receipt {
+                box-shadow: none !important;
+            }
+
+            .page-body {
+                padding: 0;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH GATE -->
+    <div class="auth-gate" id="authGate">
+        <div class="auth-brand">ROYAL ABAYA</div>
+        <div class="auth-subtitle">Receipt Generator</div>
+        <form class="auth-form" id="authForm">
+            <input type="email" class="auth-input" id="authEmail" placeholder="Admin Email" autocomplete="email"
+                required>
+            <input type="password" class="auth-input" id="authPassword" placeholder="Password"
+                autocomplete="current-password" required>
+            <button type="submit" class="auth-btn" id="authSubmit">Login</button>
+            <div id="authError" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: none;"></div>
+        </form>
+    </div>
+
+    <!-- RECEIPT WRAPPER -->
+    <div class="receipt-wrapper" id="receiptWrapper">
+
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <span class="header-brand">ROYAL ABAYA</span>
+                <span class="header-badge">Receipt</span>
+            </div>
+            <div class="header-actions">
+                <a href="ledger.html" class="back-link">📒 Ledger</a>
+                <a href="admin.html" class="back-link">← Admin</a>
+                <button id="logoutBtn" class="btn btn-ghost" style="padding:8px 14px;font-size:0.68rem;">Logout</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+            <div class="two-col">
+
+                <!-- ─── LEFT: Form Panel ─── -->
+                <div class="form-card">
+                    <div class="section-title">Customer Details</div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Customer Name</label>
+                            <input type="text" class="form-input" id="custName" placeholder="e.g. Fatima Ahmed">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-input" id="custPhone" placeholder="+91 98765 43210"
+                                maxlength="15">
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+                    <div class="section-title">Items</div>
+
+                    <div class="items-header">
+                        <div>Item / Description</div>
+                        <div>Qty</div>
+                        <div>MRP (₹)</div>
+                        <div></div>
+                    </div>
+                    <div id="itemsContainer">
+                        <!-- Item rows added by JS -->
+                    </div>
+                    <button class="add-item-btn" id="addItemBtn">+ Add Item</button>
+
+                    <hr class="divider">
+                    <div class="section-title">Discount & Payment</div>
+
+                    <div class="discount-row" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label class="form-label">Discount Amount (₹)</label>
+                            <input type="number" class="form-input" id="discountFlat" placeholder="0" min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Discount (%)</label>
+                            <input type="number" class="form-input" id="discountPct" placeholder="0" min="0" max="100"
+                                step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="payment-group">
+                        <div class="payment-label">Mode of Payment</div>
+                        <div class="payment-options">
+                            <button class="pay-btn active" data-pay="UPI">📱 UPI</button>
+                            <button class="pay-btn" data-pay="Cash">💵 Cash</button>
+                            <button class="pay-btn" data-pay="Credit Card">💳 Card</button>
+                        </div>
+                    </div>
+
+                    <div class="action-row">
+                        <button class="btn btn-gold" id="printBtn">🖨 Print Receipt</button>
+                        <button class="btn btn-ghost" id="saveBtn">💾 Save Receipt</button>
+                        <button class="btn btn-danger" id="clearBtn">Clear</button>
+                    </div>
+                </div>
+
+                <!-- ─── RIGHT: Receipt Preview ─── -->
+                <div class="receipt-preview-card">
+                    <div class="preview-label">Receipt Preview</div>
+                    <div class="receipt" id="receiptPreview">
+                        <div class="receipt-top">
+                            <div class="receipt-shop">ROYAL ABAYA</div>
+                            <div class="receipt-tagline">Elegance in Every Thread</div>
+                            <div class="receipt-no" id="prevReceiptNo">Receipt #RA-0001</div>
+                            <div class="receipt-date" id="prevDate"></div>
+                        </div>
+
+                        <div class="receipt-customer" id="prevCustomer">
+                            <div class="receipt-customer-name" id="prevCustName">Customer</div>
+                            <div class="receipt-customer-phone" id="prevCustPhone"></div>
+                        </div>
+
+                        <table class="receipt-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th style="text-align:center">Qty</th>
+                                    <th style="text-align:right">MRP</th>
+                                    <th style="text-align:right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prevItemsBody">
+                                <tr>
+                                    <td colspan="4" style="text-align:center;color:#aaa;padding:12px 0;">Add items above
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="receipt-totals">
+                            <div class="receipt-row" id="prevSubtotalRow">
+                                <span>Subtotal</span>
+                                <span id="prevSubtotal">₹0</span>
+                            </div>
+                            <div class="receipt-row discount" id="prevDiscountRow" style="display:none;">
+                                <span>Discount</span>
+                                <span id="prevDiscount">-₹0</span>
+                            </div>
+                            <div class="receipt-row total">
+                                <span>Total</span>
+                                <span id="prevTotal">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="receipt-payment" id="prevPayment">
+                            <span>📱</span>
+                            <span id="prevPaymentText">Paid via UPI</span>
+                        </div>
+
+                        <div class="receipt-footer">
+                            Thank you for shopping with Royal Abaya!<br>
+                            For exchange/return, contact us within 7 days.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"><span id="toastText"></span></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="receipt.js"></script>
+
+    <!-- Vercel Speed Insights -->
+    <script>window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };</script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+
+</html>
