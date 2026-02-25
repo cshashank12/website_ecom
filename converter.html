@@ -720,32 +720,58 @@
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
         // ── Fetch Live Rate ───────────────────────────────────────────
+        // Uses 3 free APIs as fallback chain (all support AED→INR, no API key)
+        const RATE_APIS = [
+            {
+                url: 'https://open.er-api.com/v6/latest/AED',
+                parse: d => ({ rate: d.rates.INR, date: d.time_last_update_utc?.slice(0, 16) || 'recent' })
+            },
+            {
+                url: 'https://api.exchangerate-api.com/v4/latest/AED',
+                parse: d => ({ rate: d.rates.INR, date: d.date || 'recent' })
+            },
+            {
+                url: 'https://api.fxratesapi.com/latest?base=AED&currencies=INR&resolution=1m&amount=1&places=6&format=json',
+                parse: d => ({ rate: d.rates.INR, date: d.date || 'recent' })
+            }
+        ];
+
         async function fetchRate() {
             const dot = document.getElementById('rateDot');
             const stxt = document.getElementById('rateStatusTxt');
-            dot.style.background = '#f97316'; dot.style.boxShadow = '0 0 6px #f97316';
-            stxt.textContent = 'Fetching…';
-            try {
-                const res = await fetch('https://api.frankfurter.app/latest?from=AED&to=INR');
-                if (!res.ok) throw new Error('API error');
-                const data = await res.json();
-                liveRate = data.rates.INR;
-                document.getElementById('rateDisplay').textContent = liveRate.toFixed(4);
-                document.getElementById('rateUpdated').textContent = `Rate date: ${data.date}`;
-                dot.style.background = '#4ade80'; dot.style.boxShadow = '0 0 6px #4ade80';
-                stxt.textContent = 'Live rate';
-                renderBulk();
-                recalcCost();
-                recalcBatch();
-            } catch {
-                stxt.textContent = 'Error — using fallback';
-                dot.style.background = '#e74c3c'; dot.style.boxShadow = '0 0 6px #e74c3c';
-                // Fallback approximate rate
-                liveRate = 22.85;
-                document.getElementById('rateDisplay').textContent = liveRate.toFixed(4) + '*';
-                document.getElementById('rateUpdated').textContent = '* Offline fallback rate';
-                renderBulk();
+            dot.style.background = '#f97316';
+            dot.style.boxShadow = '0 0 6px #f97316';
+            stxt.textContent = 'Fetching live rate…';
+
+            for (const api of RATE_APIS) {
+                try {
+                    const res = await fetch(api.url);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const data = await res.json();
+                    const { rate, date } = api.parse(data);
+                    if (!rate || isNaN(rate)) throw new Error('Bad rate');
+
+                    liveRate = rate;
+                    document.getElementById('rateDisplay').textContent = liveRate.toFixed(4);
+                    document.getElementById('rateUpdated').textContent = `Updated: ${date}`;
+                    dot.style.background = '#4ade80';
+                    dot.style.boxShadow = '0 0 6px #4ade80';
+                    stxt.textContent = 'Live rate ✓';
+                    renderBulk(); recalcCost(); recalcBatch();
+                    return; // success — stop trying
+                } catch (e) {
+                    console.warn('Rate API failed, trying next…', api.url, e.message);
+                }
             }
+
+            // All APIs failed — use fallback
+            liveRate = 22.85;
+            document.getElementById('rateDisplay').textContent = liveRate.toFixed(4) + '*';
+            document.getElementById('rateUpdated').textContent = '* Offline fallback — refresh to retry';
+            dot.style.background = '#e74c3c';
+            dot.style.boxShadow = '0 0 6px #e74c3c';
+            stxt.textContent = 'Using fallback rate';
+            renderBulk();
         }
         document.getElementById('refreshBtn').addEventListener('click', fetchRate);
 
