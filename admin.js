@@ -88,14 +88,7 @@
         });
     }
 
-    function saveAllProducts(productsList) {
-        // Convert array to object keyed by product id for Firebase
-        const productsObj = {};
-        productsList.forEach(p => {
-            productsObj[p.id] = p;
-        });
-        return productsRef.set(productsObj);
-    }
+    // Instead of bulk saving, we will rely on saving individual children to avoid WebSocket payload size limits
 
     // ============================================
     // STATS
@@ -282,6 +275,8 @@
 
             if (!name || !price) return;
 
+            let productToSave;
+
             if (editingId) {
                 // Update existing product
                 const idx = products.findIndex(p => p.id === editingId);
@@ -300,6 +295,7 @@
                         products[idx].image = imagesBase64[0];   // primary
                         products[idx].images = imagesBase64;     // full gallery
                     }
+                    productToSave = products[idx];
                 }
                 editingId = null;
                 document.getElementById('formTitle').textContent = 'Add New Product';
@@ -312,12 +308,21 @@
                 const primaryImage = imagesBase64.length > 0 ? imagesBase64[0] : 'images/ezgif-frame-001.jpg';
                 const allImages = imagesBase64.length > 0 ? imagesBase64 : [primaryImage];
 
-                products.push({ id, name, price: Number(price), category, sizes, description, image: primaryImage, images: allImages, stock, costPrice });
+                const newProduct = { id, name, price: Number(price), category, sizes, description, image: primaryImage, images: allImages, stock, costPrice };
+                products.push(newProduct);
+                productToSave = newProduct;
                 showToast('Product added!', 'success');
             }
 
-            // Save to Firebase
-            await saveAllProducts(products);
+            // Save to Firebase (only the specific product to avoid exceeding payload limits)
+            if (productToSave) {
+                try {
+                    await productsRef.child(productToSave.id).set(productToSave);
+                } catch (err) {
+                    console.error('Error saving product to Firebase:', err);
+                    showToast('Failed to save to database. Image too large?', 'error');
+                }
+            }
 
             // Reset form
             form.reset();
@@ -387,9 +392,14 @@
 
     async function deleteProduct(id) {
         if (!confirm('Delete this product?')) return;
-        products = products.filter(p => p.id !== id);
-        await saveAllProducts(products);
-        showToast('Product deleted', 'error');
+        try {
+            // Remove the specific product directly from Firebase
+            await productsRef.child(id).remove();
+            showToast('Product deleted', 'error');
+        } catch (err) {
+            console.error('Error deleting product:', err);
+            showToast('Failed to delete product', 'error');
+        }
     }
 
     // ============================================
@@ -408,9 +418,15 @@
             { id: 'RA-ROSE', name: 'Rose Petal', price: 2900, category: 'Casual', sizes: ['S', 'M', 'L', 'XL'], description: 'A soft dusty rose abaya in breathable cotton-silk blend, perfect for everyday elegance.', image: 'images/ezgif-frame-085.jpg' },
         ];
 
-        products = [...products, ...samples];
-        await saveAllProducts(products);
-        showToast('Sample data loaded!', 'success');
+        try {
+            const updates = {};
+            samples.forEach(s => updates[s.id] = s);
+            await productsRef.update(updates);
+            showToast('Sample data loaded!', 'success');
+        } catch (err) {
+            console.error('Error loading samples:', err);
+            showToast('Failed to load samples', 'error');
+        }
     }
 
     // ============================================
