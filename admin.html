@@ -312,7 +312,7 @@
         .image-upload {
             border: 2px dashed var(--border-accent);
             border-radius: var(--radius-md);
-            padding: 32px;
+            padding: 28px;
             text-align: center;
             cursor: pointer;
             transition: all var(--transition-fast);
@@ -343,17 +343,79 @@
             color: var(--text-muted);
         }
 
-        .image-preview {
-            max-width: 200px;
-            max-height: 240px;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            margin: 12px auto 0;
-            display: none;
+        .image-upload-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            opacity: 0.7;
         }
 
-        .image-preview.visible {
+        /* Multi-photo thumbnail strip */
+        .image-thumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .image-thumb-wrap {
+            position: relative;
+            width: 80px;
+            height: 100px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 2px solid var(--border-subtle);
+            background: var(--bg-input);
+            transition: border-color var(--transition-fast);
+        }
+
+        .image-thumb-wrap.primary {
+            border-color: var(--accent-gold);
+        }
+
+        .image-thumb-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
+        }
+
+        .image-thumb-remove {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background var(--transition-fast);
+        }
+
+        .image-thumb-remove:hover {
+            background: var(--danger);
+        }
+
+        .image-thumb-primary-badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(201,169,110,0.9);
+            color: #000;
+            font-size: 0.58rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 2px 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         /* Buttons */
@@ -669,13 +731,14 @@
                                 placeholder="Describe the abaya's fabric, design, and craftsmanship..."></textarea>
                         </div>
                         <div class="form-group full">
-                            <label class="form-label">Product Image *</label>
+                            <label class="form-label">Product Images <span style="color:var(--text-muted);font-weight:400;font-size:0.65rem">(first photo is the main display image)</span></label>
                             <div class="image-upload" id="imageUpload">
-                                <input type="file" accept="image/*" id="prodImage">
+                                <input type="file" accept="image/*" id="prodImage" multiple>
                                 <div class="image-upload-icon">📷</div>
-                                <div class="image-upload-text">Click or drag to upload product image</div>
-                                <img class="image-preview" id="imagePreview" alt="Preview">
+                                <div class="image-upload-text">Click or drag to upload product photos</div>
+                                <div class="image-upload-sub">Select multiple photos at once — first one becomes the product card image</div>
                             </div>
+                            <div class="image-thumbs" id="imageThumbs"></div>
                         </div>
                     </div>
                     <input type="hidden" id="editId">

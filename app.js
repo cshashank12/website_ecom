@@ -8,7 +8,7 @@
 
   // --- CONFIG ---
   const CONFIG = {
-    WHATSAPP_NUMBER: '+91XXXXXXXXXX', // Replace with your business number
+    WHATSAPP_NUMBER: '+919555962173', // Business WhatsApp
     TOTAL_FRAMES: 120,
     FRAME_RATE: 24,
     CURRENCY: '₹',
@@ -311,8 +311,12 @@
     currentModalProduct = product;
     selectedSize = null;
 
-    document.getElementById('modalImage').src = product.image;
-    document.getElementById('modalImage').alt = product.name;
+    const modalImgEl = document.getElementById('modalImage');
+    const modalImgContainer = document.querySelector('.modal-image');
+
+    // Set primary image
+    modalImgEl.src = product.image;
+    modalImgEl.alt = product.name;
     document.getElementById('modalCategory').textContent = product.category || 'Abaya';
     document.getElementById('modalName').textContent = product.name;
     document.getElementById('modalPrice').textContent = CONFIG.CURRENCY + Number(product.price).toLocaleString('en-IN');
@@ -325,9 +329,38 @@
       `<button class="size-option" onclick="window.APP.selectSize('${s}', this)">${s}</button>`
     ).join('');
 
+    // Remove any existing gallery strip
+    const existingStrip = modalImgContainer.querySelector('.modal-gallery-strip');
+    if (existingStrip) existingStrip.remove();
+
+    // Build gallery strip if product has multiple images
+    const images = product.images && product.images.length > 1 ? product.images : null;
+    if (images) {
+      const strip = document.createElement('div');
+      strip.className = 'modal-gallery-strip';
+
+      images.forEach((src, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.alt = `Photo ${i + 1}`;
+        thumb.className = 'modal-gallery-thumb' + (i === 0 ? ' active' : '');
+        thumb.addEventListener('click', () => {
+          modalImgEl.src = src;
+          // Reset zoom when switching photos
+          modalImgContainer.classList.remove('zoomed');
+          modalImgEl.style.transformOrigin = 'center center';
+          // Update active state
+          strip.querySelectorAll('.modal-gallery-thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+        strip.appendChild(thumb);
+      });
+
+      modalImgContainer.appendChild(strip);
+    }
+
     // Reset zoom
-    const modalImg = document.querySelector('.modal-image');
-    if (modalImg) modalImg.classList.remove('zoomed');
+    modalImgContainer.classList.remove('zoomed');
 
     document.getElementById('productModal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -337,9 +370,13 @@
     document.getElementById('productModal').classList.remove('active');
     document.body.style.overflow = '';
     currentModalProduct = null;
-    // Reset zoom
-    const modalImg = document.querySelector('.modal-image');
-    if (modalImg) modalImg.classList.remove('zoomed');
+    // Reset zoom and remove gallery strip
+    const modalImgContainer = document.querySelector('.modal-image');
+    if (modalImgContainer) {
+      modalImgContainer.classList.remove('zoomed');
+      const strip = modalImgContainer.querySelector('.modal-gallery-strip');
+      if (strip) strip.remove();
+    }
   }
 
   function selectSize(size, btn) {
@@ -357,7 +394,10 @@
     if (!modalImageContainer) return;
 
     modalImageContainer.addEventListener('click', function (e) {
-      const img = this.querySelector('img');
+      // Don't zoom when clicking gallery thumbnails
+      if (e.target.closest('.modal-gallery-strip')) return;
+
+      const img = this.querySelector('#modalImage');
       if (!img) return;
 
       if (this.classList.contains('zoomed')) {
@@ -374,7 +414,9 @@
 
     modalImageContainer.addEventListener('mousemove', function (e) {
       if (!this.classList.contains('zoomed')) return;
-      const img = this.querySelector('img');
+      if (e.target.closest('.modal-gallery-strip')) return;
+      const img = this.querySelector('#modalImage');
+      if (!img) return;
       const rect = this.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;

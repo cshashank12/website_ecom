@@ -11,7 +11,7 @@
 
     let products = [];
     let editingId = null;
-    let imageBase64 = '';
+    let imagesBase64 = []; // Array of base64 strings; first = primary
 
     // ============================================
     // AUTH GATE
@@ -210,23 +210,60 @@
     // FORM HANDLERS
     // ============================================
 
+    // ============================================
+    // MULTI-IMAGE THUMBNAIL STRIP
+    // ============================================
+
+    function renderThumbs() {
+        const strip = document.getElementById('imageThumbs');
+        if (!strip) return;
+        strip.innerHTML = imagesBase64.map((src, i) => `
+            <div class="image-thumb-wrap ${i === 0 ? 'primary' : ''}">
+                <img src="${src}" alt="Photo ${i + 1}">
+                <button type="button" class="image-thumb-remove" onclick="ADMIN.removeImage(${i})" title="Remove">✕</button>
+                ${i === 0 ? '<div class="image-thumb-primary-badge">Main</div>' : ''}
+            </div>`).join('');
+    }
+
+    function removeImage(index) {
+        imagesBase64.splice(index, 1);
+        renderThumbs();
+    }
+
+    function resetImages() {
+        imagesBase64 = [];
+        renderThumbs();
+        // Reset file input so same files can be re-selected
+        const inp = document.getElementById('prodImage');
+        if (inp) inp.value = '';
+    }
+
     function initForm() {
         const form = document.getElementById('productForm');
         const imageInput = document.getElementById('prodImage');
-        const preview = document.getElementById('imagePreview');
 
-        // Image upload
+        // Multi-image upload handler
         imageInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
 
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                imageBase64 = ev.target.result;
-                preview.src = imageBase64;
-                preview.classList.add('visible');
-            };
-            reader.readAsDataURL(file);
+            let loaded = 0;
+            const newImages = new Array(files.length);
+
+            files.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    newImages[idx] = ev.target.result;
+                    loaded++;
+                    if (loaded === files.length) {
+                        imagesBase64 = [...imagesBase64, ...newImages];
+                        renderThumbs();
+                        // Reset so user can add more files next time
+                        imageInput.value = '';
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         });
 
         // Form submit
@@ -259,7 +296,10 @@
                         stock,
                         costPrice,
                     };
-                    if (imageBase64) products[idx].image = imageBase64;
+                    if (imagesBase64.length > 0) {
+                        products[idx].image = imagesBase64[0];   // primary
+                        products[idx].images = imagesBase64;     // full gallery
+                    }
                 }
                 editingId = null;
                 document.getElementById('formTitle').textContent = 'Add New Product';
@@ -269,9 +309,10 @@
             } else {
                 // New product
                 const id = 'RA-' + Date.now().toString(36).toUpperCase();
-                const image = imageBase64 || 'images/ezgif-frame-001.jpg';
+                const primaryImage = imagesBase64.length > 0 ? imagesBase64[0] : 'images/ezgif-frame-001.jpg';
+                const allImages = imagesBase64.length > 0 ? imagesBase64 : [primaryImage];
 
-                products.push({ id, name, price: Number(price), category, sizes, description, image, stock, costPrice });
+                products.push({ id, name, price: Number(price), category, sizes, description, image: primaryImage, images: allImages, stock, costPrice });
                 showToast('Product added!', 'success');
             }
 
@@ -281,8 +322,7 @@
             // Reset form
             form.reset();
             document.getElementById('prodSizes').value = 'S, M, L, XL';
-            imageBase64 = '';
-            preview.classList.remove('visible');
+            resetImages();
         });
 
         // Cancel edit
@@ -292,8 +332,7 @@
             document.getElementById('prodSizes').value = 'S, M, L, XL';
             document.getElementById('prodStock').value = '';
             document.getElementById('prodCost').value = '';
-            imageBase64 = '';
-            preview.classList.remove('visible');
+            resetImages();
             document.getElementById('formTitle').textContent = 'Add New Product';
             document.getElementById('submitBtn').textContent = 'Add Product';
             document.getElementById('cancelEdit').style.display = 'none';
@@ -327,14 +366,17 @@
         document.getElementById('prodSizes').value = (product.sizes || []).join(', ');
         document.getElementById('prodDescription').value = product.description || '';
         document.getElementById('prodStock').value = (product.stock !== null && product.stock !== undefined) ? product.stock : '';
-        document.getElementById('prodCost').value = (product.costPrice !== null && product.costPrice !== undefined) ? product.costPrice : ''
+        document.getElementById('prodCost').value = (product.costPrice !== null && product.costPrice !== undefined) ? product.costPrice : '';
 
-        if (product.image) {
-            const preview = document.getElementById('imagePreview');
-            preview.src = product.image;
-            preview.classList.add('visible');
-            imageBase64 = product.image;
+        // Pre-populate images array from existing product data
+        if (product.images && product.images.length > 0) {
+            imagesBase64 = [...product.images];
+        } else if (product.image) {
+            imagesBase64 = [product.image];
+        } else {
+            imagesBase64 = [];
         }
+        renderThumbs();
 
         document.getElementById('formTitle').textContent = 'Edit Product';
         document.getElementById('submitBtn').textContent = 'Update Product';
@@ -393,6 +435,7 @@
     window.ADMIN = {
         editProduct,
         deleteProduct,
+        removeImage,
     };
 
     document.addEventListener('DOMContentLoaded', () => {
