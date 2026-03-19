@@ -781,6 +781,36 @@ button {
   color: var(--text-dark);
 }
 
+.buy-whatsapp-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.buy-whatsapp-btn:hover {
+  background: #25d366; /* WhatsApp Green */
+  border-color: #25d366;
+  color: white;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.buy-whatsapp-btn::before {
+  content: '✦';
+  font-size: 0.8rem;
+}
+
 /* Empty state */
 .empty-catalog {
   text-align: center;

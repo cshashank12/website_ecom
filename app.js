@@ -281,9 +281,9 @@
           <span class="product-card-category">${p.category || 'Abaya'}</span>
           <h3 class="product-card-name">${p.name}</h3>
           <p class="product-card-price">${CONFIG.CURRENCY}${Number(p.price).toLocaleString('en-IN')}</p>
-          <button class="add-cart-btn ${cart.some(c => c.id === p.id) ? 'added' : ''}"
-                  onclick="event.stopPropagation(); window.APP.addToCart('${p.id}', event)">
-            ${cart.some(c => c.id === p.id) ? '✓ Added' : 'Add to Cart'}
+          <button class="buy-whatsapp-btn"
+                  onclick="event.stopPropagation(); window.APP.openModal('${p.id}')">
+            Buy on WhatsApp
           </button>
         </div>
       </div>`;
@@ -548,19 +548,26 @@
     window.open(url, '_blank');
   }
 
-  function whatsappSingleProduct() {
-    if (!currentModalProduct) return;
-    const p = currentModalProduct;
-    let message = `🕌 *Royal Abaya — Product Inquiry*\n\n`;
-    message += `I'm interested in:\n\n`;
-    message += `*${p.name}*\n`;
-    message += `Product ID: ${p.id}\n`;
-    message += `Price: ${CONFIG.CURRENCY}${Number(p.price).toLocaleString('en-IN')}\n`;
-    message += `Size: ${selectedSize || 'Not selected'}\n\n`;
-    message += `Please share more details. Thank you! 🤍`;
+  function purchaseWhatsApp(productId, size = null) {
+    const p = products.find(p => p.id === productId);
+    if (!p) return;
+
+    let message = `🕌 *Royal Abaya — Order Request*\n\n`;
+    message += `I would like to buy this exclusive piece:\n\n`;
+    message += `*Product:* ${p.name}\n`;
+    message += `*Product ID:* ${p.id}\n`;
+    message += `*Size:* ${size || 'M (Standard)'}\n`;
+    message += `*Price:* ${CONFIG.CURRENCY}${Number(p.price).toLocaleString('en-IN')}\n\n`;
+    message += `*View Product:* ${window.location.origin}/products.html?id=${p.id}\n\n`;
+    message += `Please confirm availability and share payment details. Thank you! 🤍`;
 
     const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
+  }
+
+  function whatsappSingleProduct() {
+    if (!currentModalProduct) return;
+    purchaseWhatsApp(currentModalProduct.id, selectedSize);
   }
 
   // ============================================
@@ -876,7 +883,11 @@
     });
     document.getElementById('modalAddCart').addEventListener('click', (e) => {
       if (currentModalProduct) {
-        addToCart(currentModalProduct.id, e);
+        if (!selectedSize) {
+          showToast('Please select a size first ✦');
+          return;
+        }
+        purchaseWhatsApp(currentModalProduct.id, selectedSize);
         closeModal();
       }
     });
@@ -942,6 +953,7 @@
     addToCart,
     removeFromCart,
     selectSize,
+    purchaseWhatsApp,
   };
 
   // Go
